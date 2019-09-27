@@ -1,0 +1,21 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.6
+
+Layout/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  Max: 15
+
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'lib/parse_date.rb'
+
+Style/WordArray:
+  Enabled: false
