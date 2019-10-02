@@ -20,5 +20,5 @@ loader.setup
 
 module ParseDate
   class Error < StandardError; end
-  # Your code goes here...
+  require 'parse_date/int_from_string'
 end
