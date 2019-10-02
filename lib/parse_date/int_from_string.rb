@@ -1,22 +1,26 @@
 # frozen_string_literal: true
 
-module ParseDate
+require 'date' # so upstream callers don't have to require it
+
+class ParseDate
+
+  # Parse (Year) Integers from Date Strings
   module IntFromString
 
     # get Integer year if we can parse date_str to get a year.
     # @return [Integer, nil] Integer year if we could parse one, nil otherwise
-    def year_int_from_date_str(orig_date_str)
+    def self.year_int_from_date_str(orig_date_str)
       return if orig_date_str == '0000-00-00' # shpc collection has these useless dates
       # B.C. first in case there are 4 digits, e.g. 1600 B.C.
-      return sortable_year_int_for_bc(orig_date_str) if orig_date_str.match(BC_REGEX)
+      return ParseDate.send(:sortable_year_int_for_bc, orig_date_str) if orig_date_str.match(BC_REGEX)
 
-      result = sortable_year_for_yyyy_or_yy(orig_date_str)
-      result ||= sortable_year_for_decade(orig_date_str) # 19xx or 20xx
-      result ||= sortable_year_for_century(orig_date_str)
-      result ||= sortable_year_int_for_early_numeric(orig_date_str)
+      result = ParseDate.send(:sortable_year_for_yyyy_or_yy, orig_date_str)
+      result ||= ParseDate.send(:sortable_year_for_decade, orig_date_str) # 19xx or 20xx
+      result ||= ParseDate.send(:sortable_year_for_century, orig_date_str)
+      result ||= ParseDate.send(:sortable_year_int_for_early_numeric, orig_date_str)
       unless result
         # try removing brackets between digits in case we have 169[5] or [18]91
-        no_brackets = remove_brackets(orig_date_str)
+        no_brackets = ParseDate.send(:remove_brackets, orig_date_str)
         return year_int_from_date_str(no_brackets) if no_brackets
       end
       result.to_i if result && year_int_valid?(result.to_i)
@@ -24,21 +28,21 @@ module ParseDate
 
     # true if the year is between -9999 and (current year + 1)
     # @return [Boolean] true if the year is between -9999 and (current year + 1); false otherwise
-    def year_int_valid?(year)
+    def self.year_int_valid?(year)
       return false unless year.is_a? Integer
 
       (-1000 < year.to_i) && (year < Date.today.year + 2)
     end
 
-    private
+    protected
 
     # get String sortable value year if we can parse date_str to get a year.
     # @return [String, nil] String sortable year if we could parse one, nil otherwise
     #  note that these values must *lexically* sort to create a chronological sort.
     def sortable_year_for_yyyy_or_yy(orig_date_str)
       # most date strings have a four digit year
-      result = sortable_year_for_yyyy(orig_date_str)
-      result ||= sortable_year_for_yy(orig_date_str) # 19xx or 20xx
+      result = ParseDate.sortable_year_for_yyyy(orig_date_str)
+      result ||= ParseDate.sortable_year_for_yy(orig_date_str) # 19xx or 20xx
       result
     end
 
@@ -53,7 +57,7 @@ module ParseDate
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if orig_date_str has yyyy, nil otherwise
     def sortable_year_for_yyyy(orig_date_str)
       matches = orig_date_str.match(/\d{4}/) if orig_date_str
-      matches.to_s if matches
+      matches&.to_s
     end
 
     # returns 4 digit year as String if we have a x/x/yy or x-x-yy pattern
@@ -72,9 +76,7 @@ module ParseDate
         hyphen_matches = orig_date_str.match(/\d{1,2}-\d{1,2}-\d{2}/)
         date_obj = Date.strptime(orig_date_str, '%m-%d-%y') if hyphen_matches
       end
-      if date_obj && date_obj > Date.today
-        date_obj = Date.new(date_obj.year - 100, date_obj.month, date_obj.mday)
-      end
+      date_obj = Date.new(date_obj.year - 100, date_obj.month, date_obj.mday) if date_obj && date_obj > Date.today
       date_obj.year.to_s if date_obj
     rescue ArgumentError
       nil # explicitly want nil if date won't parse
@@ -88,7 +90,7 @@ module ParseDate
     def sortable_year_for_decade(orig_date_str)
       decade_matches = orig_date_str.match(DECADE_4CHAR_REGEXP) if orig_date_str
       changed_to_zero = decade_matches.to_s.tr('u\-?x', '0') if decade_matches
-      sortable_year_for_yyyy(changed_to_zero) if changed_to_zero
+      ParseDate.sortable_year_for_yyyy(changed_to_zero) if changed_to_zero
     end
 
     CENTURY_WORD_REGEXP = Regexp.new('(\d{1,2}).*century')
@@ -103,15 +105,17 @@ module ParseDate
 
       century_matches = orig_date_str.match(CENTURY_4CHAR_REGEXP)
       if century_matches
-        return $1 + '00' if $1.length == 2
-        return '0' + $1 + '00' if $1.length == 1
+        m = Regexp.last_match(1)
+        return m + '00' if m.length == 2
+        return '0' + m + '00' if m.length == 1
       end
+
       century_str_matches = orig_date_str.match(CENTURY_WORD_REGEXP)
-      if century_str_matches
-        yy = ($1.to_i - 1).to_s
-        return yy + '00' if yy.length == 2
-        return '0' + yy + '00' if yy.length == 1
-      end
+      return unless century_str_matches
+
+      yy = (Regexp.last_match(1).to_i - 1).to_s
+      return yy + '00' if yy.length == 2
+      return '0' + yy + '00' if yy.length == 1
     end
 
     BC_REGEX = Regexp.new('(\d{1,4}).*' + Regexp.escape('B.C.'))
@@ -120,7 +124,7 @@ module ParseDate
     # @return [Integer, nil] Integer sortable -ddd if B.C. in pattern; nil otherwise
     def sortable_year_int_for_bc(orig_date_str)
       bc_matches = orig_date_str.match(BC_REGEX) if orig_date_str
-      "-#{$1}".to_i if bc_matches
+      "-#{Regexp.last_match(1)}".to_i if bc_matches
     end
 
     EARLY_NUMERIC = Regexp.new('^\-?\d{1,3}$')
