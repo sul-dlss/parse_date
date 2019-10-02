@@ -25,7 +25,46 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+ParseDate is a module with date string parsing methods.
+
+Include the desired functionality in the class of your choice:
+
+```
+require 'parse_date/int_from_string'
+
+class DummyClass
+  include ParseDate::IntFromString
+end
+```
+
+And then you may use the public methods as you like:
+
+```
+klass = DummyClass.new
+klass.year_int_from_date_str('12/25/00') # 2000
+klass.year_int_from_date_str('5-1-21') # 1921
+klass.year_int_from_date_str('18th century CE') # 1700
+klass.year_int_from_date_str('1666 B.C.') # -1666
+klass.year_int_from_date_str('17uu') # 1700
+klass.year_int_from_date_str('-914') # -914
+klass.year_int_from_date_str('[c1926]') # 1926
+klass.year_int_from_date_str('ca. 1558') # 1558
+
+klass.year_int_valid?(0) # true
+klass.year_int_valid?(5) # true
+klass.year_int_valid?(33) # true
+klass.year_int_valid?(150) # true
+klass.year_int_valid?(2019) # true
+klass.year_int_valid?(Date.today.year + 1) # true
+klass.year_int_valid?(-3) # true
+klass.year_int_valid?(-35) # true
+klass.year_int_valid?(-999) # true
+klass.year_int_valid?(-1666) # false - four digit negative years not considered valid here
+klass.year_int_valid?(165x) # false
+klass.year_int_valid?(198-) # false
+klass.year_int_valid?('random text') # false
+klass.year_int_valid?(nil) # false
+```
 
 ## Development
 
