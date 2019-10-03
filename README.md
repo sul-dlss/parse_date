@@ -25,7 +25,35 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+ParseDate has class methods for date string parsing.
+
+```
+require 'parse_date'
+
+ParseDate.year_int_from_date_str('12/25/00') # 2000
+ParseDate.year_int_from_date_str('5-1-21') # 1921
+ParseDate.year_int_from_date_str('18th century CE') # 1700
+ParseDate.year_int_from_date_str('1666 B.C.') # -1666
+ParseDate.year_int_from_date_str('17uu') # 1700
+ParseDate.year_int_from_date_str('-914') # -914
+ParseDate.year_int_from_date_str('[c1926]') # 1926
+ParseDate.year_int_from_date_str('ca. 1558') # 1558
+
+ParseDate.year_int_valid?(0) # true
+ParseDate.year_int_valid?(5) # true
+ParseDate.year_int_valid?(33) # true
+ParseDate.year_int_valid?(150) # true
+ParseDate.year_int_valid?(2019) # true
+ParseDate.year_int_valid?(Date.today.year + 1) # true
+ParseDate.year_int_valid?(-3) # true
+ParseDate.year_int_valid?(-35) # true
+ParseDate.year_int_valid?(-999) # true
+ParseDate.year_int_valid?(-1666) # false - four digit negative years not considered valid here
+ParseDate.year_int_valid?(165x) # false
+ParseDate.year_int_valid?(198-) # false
+ParseDate.year_int_valid?('random text') # false
+ParseDate.year_int_valid?(nil) # false
+```
 
 ## Development
 
