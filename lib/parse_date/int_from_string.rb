@@ -8,6 +8,11 @@ class ParseDate
   module IntFromString
 
     # get Integer year if we can parse date_str to get a year.
+    # NOTE:  if we have a x/x/yy or x-x-yy pattern (the only 2 digit year patterns
+    #   found in our actual date strings in stanford-mods records), then
+    #   we use 20 as century digits unless it is greater than current year:
+    #   1/1/17  ->  2017
+    #   1/1/27  ->  1927
     # @return [Integer, nil] Integer year if we could parse one, nil otherwise
     def self.year_int_from_date_str(orig_date_str)
       return if orig_date_str == '0000-00-00' # shpc collection has these useless dates
@@ -26,8 +31,8 @@ class ParseDate
       result.to_i if result && year_int_valid?(result.to_i)
     end
 
-    # true if the year is between -9999 and (current year + 1)
-    # @return [Boolean] true if the year is between -9999 and (current year + 1); false otherwise
+    # true if the year is between -999 and (current year + 1)
+    # @return [Boolean] true if the year is between -999 and (current year + 1); false otherwise
     def self.year_int_valid?(year)
       return false unless year.is_a? Integer
 
@@ -61,10 +66,10 @@ class ParseDate
     end
 
     # returns 4 digit year as String if we have a x/x/yy or x-x-yy pattern
-    #   note that these are the only 2 digit year patterns found in our actual date strings in MODS records
+    #   note that these are the only 2 digit year patterns found in our actual date strings in stanford-mods records
     #   we use 20 as century digits unless it is greater than current year:
-    #   1/1/15  ->  2015
-    #   1/1/25  ->  1925
+    #   1/1/17  ->  2017
+    #   1/1/27  ->  1927
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if orig_date_str matches pattern, nil otherwise
     def sortable_year_for_yy(orig_date_str)
       return unless orig_date_str
