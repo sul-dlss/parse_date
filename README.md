@@ -30,14 +30,14 @@ ParseDate has class methods for date string parsing.
 ```
 require 'parse_date'
 
-ParseDate.year_int_from_date_str('12/25/00') # 2000
-ParseDate.year_int_from_date_str('5-1-21') # 1921
-ParseDate.year_int_from_date_str('18th century CE') # 1700
-ParseDate.year_int_from_date_str('1666 B.C.') # -1666
-ParseDate.year_int_from_date_str('17uu') # 1700
-ParseDate.year_int_from_date_str('-914') # -914
-ParseDate.year_int_from_date_str('[c1926]') # 1926
-ParseDate.year_int_from_date_str('ca. 1558') # 1558
+ParseDate.earliest_year('12/25/00') # 2000
+ParseDate.earliest_year('5-1-21') # 1921
+ParseDate.earliest_year('18th century CE') # 1700
+ParseDate.earliest_year('1666 B.C.') # -1666
+ParseDate.earliest_year('17uu') # 1700
+ParseDate.earliest_year('-914') # -914
+ParseDate.earliest_year('[c1926]') # 1926
+ParseDate.earliest_year('ca. 1558') # 1558
 
 ParseDate.year_int_valid?(0) # true
 ParseDate.year_int_valid?(5) # true
