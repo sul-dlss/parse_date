@@ -359,15 +359,14 @@ RSpec.describe ParseDate::IntFromString do
   }
   # we have data like this for our Roman coins collection
   early_numeric_dates = {
-    # note that values must lexically sort to create a chronological sort. (-999 before -914)
-    '-999' => '-001',
-    '-914' => '-086',
-    '-18' => '-982',
-    '-1' => '-999',
-    '0' => '0000',
-    '5' => '0005',
-    '33' => '0033',
-    '945' => '0945'
+    '-999' => -999,
+    '-914' => -914,
+    '-18' => -18,
+    '-1' => -1,
+    '0' => 0,
+    '5' => 5,
+    '33' => 33,
+    '945' => 945
   }
   bc_dates_to_int = {
     '801 B.C.' => -801,
@@ -408,9 +407,9 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    early_numeric_dates.each do |example, _expected|
+    early_numeric_dates.each do |example, expected|
       it "#{example} for #{example}" do
-        expect(ParseDate.earliest_year(example)).to eq example.to_i
+        expect(ParseDate.earliest_year(example)).to eq expected
       end
     end
 
@@ -431,6 +430,81 @@ RSpec.describe ParseDate::IntFromString do
     ].each do |example|
       it "nil for #{example}" do
         expect(ParseDate.earliest_year(example)).to eq nil
+      end
+    end
+  end
+
+  context 'latest_year' do
+    single_year
+      .merge(specific_month)
+      .merge(specific_day)
+      .merge(specific_day_2_digit_year)
+      .merge(bc_dates_to_int)
+      .merge(specific_day_ruby_parse_fail)
+      .merge(brackets_in_middle_of_year)
+      .merge(invalid_but_can_get_year).each do |example, expected|
+      it "#{expected} for single value #{example}" do
+        expect(ParseDate.latest_year(example)).to eq expected.to_i
+      end
+    end
+
+    {
+      '199u' => '1999',
+      '200-' => '2009',
+      '201?' => '2019',
+      '115x' => '1159',
+      '167-?]' => '1679',
+      '[171-?]' => '1719',
+      '[189-]' => '1899',
+      'ca.170-?]' => '1709',
+      '200-?]' => '2009',
+      # not yet
+      # '1950s' => '1959',
+      # 'early 1890s' => '1895',
+      # "1950's" => '1959'
+    }.each do |example, expected|
+      it "#{expected} for decade value #{example}" do
+        expect(ParseDate.latest_year(example)).to eq expected.to_i
+      end
+    end
+
+    # NOTE: not yet parsing this out
+    # multiple_years
+    #   .merge(multiple_years_4_digits_once).each do |example, expected|
+    #   it "#{expected.last} for multi-value #{example}" do
+    #     expect(ParseDate.latest_year(example)).to eq expected.last.to_i
+    #   end
+    # end
+
+    century_only.keys.each do |example|
+      it "1799 from #{example}" do
+        expect(ParseDate.latest_year(example)).to eq 1799
+      end
+    end
+
+    early_numeric_dates.each do |example, expected|
+      it "#{example} for #{example}" do
+        expect(ParseDate.latest_year(example)).to eq expected
+      end
+    end
+
+    it 'nil for -1666' do
+      skip('code broken for -yyyy dates but no existing data for this yet')
+      expect(ParseDate.latest_year('-1666')).to eq nil
+    end
+    it '-1666 for 1666 B.C.' do
+      expect(ParseDate.latest_year('1666 B.C.')).to eq(-1666)
+    end
+
+    [ # bad dates
+      '9999',
+      '2035',
+      '0000-00-00',
+      'uuuu',
+      '1uuu'
+    ].each do |example|
+      it "nil for #{example}" do
+        expect(ParseDate.latest_year(example)).to eq nil
       end
     end
   end
@@ -551,14 +625,6 @@ RSpec.describe ParseDate::IntFromString do
       end
       it 'nil for 7th century B.C. (to be handled in different method)' do
         expect(ParseDate.send(:first_year_for_century, '7th century B.C.')).to eq nil
-      end
-    end
-
-    context '#year_for_early_numeric' do
-      early_numeric_dates.each do |example, _expected|
-        it "#{example} for #{example}" do
-          expect(ParseDate.send(:year_for_early_numeric, example)).to eq example
-        end
       end
     end
 
