@@ -379,7 +379,7 @@ RSpec.describe ParseDate::IntFromString do
     '8 B.C.' => -8
   }
 
-  context '#year_int_from_date_str' do
+  context '#earliest_year' do
     single_year
       .merge(specific_month)
       .merge(specific_day)
@@ -389,7 +389,7 @@ RSpec.describe ParseDate::IntFromString do
       .merge(brackets_in_middle_of_year)
       .merge(invalid_but_can_get_year).each do |example, expected|
       it "#{expected} for single value #{example}" do
-        expect(ParseDate.year_int_from_date_str(example)).to eq expected.to_i
+        expect(ParseDate.earliest_year(example)).to eq expected.to_i
       end
     end
 
@@ -398,28 +398,28 @@ RSpec.describe ParseDate::IntFromString do
       .merge(decade_only)
       .merge(decade_only_4_digits).each do |example, expected|
       it "#{expected.first} for multi-value #{example}" do
-        expect(ParseDate.year_int_from_date_str(example)).to eq expected.first.to_i
+        expect(ParseDate.earliest_year(example)).to eq expected.first.to_i
       end
     end
 
     century_only.keys.each do |example|
       it "1700 from #{example}" do
-        expect(ParseDate.year_int_from_date_str(example)).to eq 1700
+        expect(ParseDate.earliest_year(example)).to eq 1700
       end
     end
 
     early_numeric_dates.each do |example, _expected|
       it "#{example} for #{example}" do
-        expect(ParseDate.year_int_from_date_str(example)).to eq example.to_i
+        expect(ParseDate.earliest_year(example)).to eq example.to_i
       end
     end
 
     it 'nil for -1666' do
       skip('code broken for -yyyy dates but no existing data for this yet')
-      expect(ParseDate.year_int_from_date_str('-1666')).to eq nil
+      expect(ParseDate.earliest_year('-1666')).to eq nil
     end
     it '-1666 for 1666 B.C.' do
-      expect(ParseDate.year_int_from_date_str('1666 B.C.')).to eq(-1666)
+      expect(ParseDate.earliest_year('1666 B.C.')).to eq(-1666)
     end
 
     [ # bad dates
@@ -430,7 +430,7 @@ RSpec.describe ParseDate::IntFromString do
       '1uuu'
     ].each do |example|
       it "nil for #{example}" do
-        expect(ParseDate.year_int_from_date_str(example)).to eq nil
+        expect(ParseDate.earliest_year(example)).to eq nil
       end
     end
   end
@@ -463,14 +463,14 @@ RSpec.describe ParseDate::IntFromString do
   end
 
   describe 'private instance methods - tests illustrate some nuances' do
-    context '#sortable_year_for_yyyy' do
+    context '#first_four_digits' do
       single_year
         .merge(specific_month)
         .merge(specific_day)
         .merge(invalid_but_can_get_year)
         .merge(specific_day_ruby_parse_fail).each do |example, expected|
         it "#{expected} for #{example}" do
-          expect(ParseDate.send(:sortable_year_for_yyyy, example)).to eq expected
+          expect(ParseDate.send(:first_four_digits, example)).to eq expected
         end
       end
 
@@ -478,7 +478,7 @@ RSpec.describe ParseDate::IntFromString do
         .merge(multiple_years_4_digits_once)
         .merge(decade_only_4_digits).each do |example, expected|
         it "#{expected.first} for #{example}" do
-          expect(ParseDate.send(:sortable_year_for_yyyy, example)).to eq expected.first
+          expect(ParseDate.send(:first_four_digits, example)).to eq expected.first
         end
       end
 
@@ -489,19 +489,19 @@ RSpec.describe ParseDate::IntFromString do
         .push(*decade_only.keys)
         .push(*century_only.keys).each do |example|
         it "nil for #{example}" do
-          expect(ParseDate.send(:sortable_year_for_yyyy, example)).to eq nil
+          expect(ParseDate.send(:first_four_digits, example)).to eq nil
         end
       end
     end
 
-    context '#sortable_year_for_yy' do
+    context '#year_from_mm_dd_yy' do
       specific_day_2_digit_year.each do |example, expected|
         it "#{expected} for #{example}" do
-          expect(ParseDate.send(:sortable_year_for_yy, example)).to eq expected
+          expect(ParseDate.send(:year_from_mm_dd_yy, example)).to eq expected
         end
       end
       it '2000 for 12/25/00' do
-        expect(ParseDate.send(:sortable_year_for_yy, '12/25/00')).to eq '2000'
+        expect(ParseDate.send(:year_from_mm_dd_yy, '12/25/00')).to eq '2000'
       end
 
       # indicate some of the strings this method cannot handle (so must be parsed with other instance methods)
@@ -510,15 +510,15 @@ RSpec.describe ParseDate::IntFromString do
         '92-31-1',  # yy-dd-mm:  doesn't work.  :-(
       ].push(*decade_only.keys).each do |example|
         it "nil for #{example}" do
-          expect(ParseDate.send(:sortable_year_for_yy, example)).to eq nil
+          expect(ParseDate.send(:year_from_mm_dd_yy, example)).to eq nil
         end
       end
     end
 
-    context '#sortable_year_for_decade' do
+    context '#first_year_for_decade' do
       decade_only.each do |example, expected|
         it "#{expected.first} for #{example}" do
-          expect(ParseDate.send(:sortable_year_for_decade, example)).to eq expected.first
+          expect(ParseDate.send(:first_year_for_decade, example)).to eq expected.first
         end
       end
       { # example string as key, expected result as value
@@ -528,44 +528,44 @@ RSpec.describe ParseDate::IntFromString do
         '202x' => '2020'
       }.each do |example, expected|
         it "#{expected} for #{example}" do
-          expect(ParseDate.send(:sortable_year_for_decade, example)).to eq expected
+          expect(ParseDate.send(:first_year_for_decade, example)).to eq expected
         end
       end
 
       # some of the strings this method cannot handle (so must be parsed with other instance methods)
       decade_only_4_digits.keys.push(*specific_day_2_digit_year.keys).each do |example|
         it "nil for #{example}" do
-          expect(ParseDate.send(:sortable_year_for_decade, example)).to eq nil
+          expect(ParseDate.send(:first_year_for_decade, example)).to eq nil
         end
       end
     end
 
-    context '#sortable_year_for_century' do
+    context '#first_year_for_century' do
       century_only.keys.each do |example|
         it "1700 from #{example}" do
-          expect(ParseDate.send(:sortable_year_for_century, example)).to eq '1700'
+          expect(ParseDate.send(:first_year_for_century, example)).to eq '1700'
         end
       end
-      it '0700 for 7--' do
-        expect(ParseDate.send(:sortable_year_for_century, '7--')).to eq '0700'
+      it '700 for 7--' do
+        expect(ParseDate.send(:first_year_for_century, '7--')).to eq '700'
       end
       it 'nil for 7th century B.C. (to be handled in different method)' do
-        expect(ParseDate.send(:sortable_year_for_century, '7th century B.C.')).to eq nil
+        expect(ParseDate.send(:first_year_for_century, '7th century B.C.')).to eq nil
       end
     end
 
-    context '#sortable_year_int_for_early_numeric' do
+    context '#year_for_early_numeric' do
       early_numeric_dates.each do |example, _expected|
         it "#{example} for #{example}" do
-          expect(ParseDate.send(:sortable_year_int_for_early_numeric, example)).to eq example.to_i
+          expect(ParseDate.send(:year_for_early_numeric, example)).to eq example
         end
       end
     end
 
-    context '#sortable_year_int_for_bc' do
+    context '#year_int_for_bc' do
       bc_dates_to_int.each do |example, expected|
         it "#{expected} for #{example}" do
-          expect(ParseDate.send(:sortable_year_int_for_bc, example)).to eq expected
+          expect(ParseDate.send(:year_int_for_bc, example)).to eq expected
         end
       end
     end
