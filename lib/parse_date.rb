@@ -25,12 +25,13 @@ class ParseDate
   include Singleton
   extend ParseDate::IntFromString
 
-  # class method delegation for ParseDate.earliest_year
+  # class method delegation
   def self.earliest_year(orig_date_str)
     ParseDate::IntFromString.earliest_year(orig_date_str)
   end
-
-  # class method delegation for ParseDate.year_int_valid?
+  def self.latest_year(orig_date_str)
+    ParseDate::IntFromString.latest_year(orig_date_str)
+  end
   def self.year_int_valid?(orig_date_str)
     ParseDate::IntFromString.year_int_valid?(orig_date_str)
   end

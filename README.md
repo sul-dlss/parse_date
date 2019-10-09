@@ -32,12 +32,23 @@ require 'parse_date'
 
 ParseDate.earliest_year('12/25/00') # 2000
 ParseDate.earliest_year('5-1-21') # 1921
-ParseDate.earliest_year('18th century CE') # 1700
 ParseDate.earliest_year('1666 B.C.') # -1666
-ParseDate.earliest_year('17uu') # 1700
 ParseDate.earliest_year('-914') # -914
 ParseDate.earliest_year('[c1926]') # 1926
 ParseDate.earliest_year('ca. 1558') # 1558
+ParseDate.earliest_year('195-') # 1950
+ParseDate.earliest_year('199u') # 1990
+ParseDate.earliest_year('197?') # 1970
+ParseDate.earliest_year('196x') # 1960
+ParseDate.earliest_year('18th century CE') # 1700
+ParseDate.earliest_year('17uu') # 1700
+
+ParseDate.latest_year('195-') # 1959
+ParseDate.latest_year('199u') # 1999
+ParseDate.latest_year('197?') # 1979
+ParseDate.latest_year('196x') # 1969
+ParseDate.latest_year('18th century CE') # 1799
+ParseDate.latest_year('17uu') # 1799
 
 ParseDate.year_int_valid?(0) # true
 ParseDate.year_int_valid?(5) # true
