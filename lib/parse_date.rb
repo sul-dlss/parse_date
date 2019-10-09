@@ -29,9 +29,11 @@ class ParseDate
   def self.earliest_year(orig_date_str)
     ParseDate::IntFromString.earliest_year(orig_date_str)
   end
+
   def self.latest_year(orig_date_str)
     ParseDate::IntFromString.latest_year(orig_date_str)
   end
+
   def self.year_int_valid?(orig_date_str)
     ParseDate::IntFromString.year_int_valid?(orig_date_str)
   end

@@ -63,7 +63,6 @@ class ParseDate
       result.to_i if result && year_int_valid?(result.to_i)
     end
 
-
     # true if the year is between -999 and (current year + 2)
     # @return [Boolean] true if the year is between -999 and (current year + 1); false otherwise
     def self.year_int_valid?(year)

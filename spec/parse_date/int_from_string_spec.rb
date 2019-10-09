@@ -434,7 +434,7 @@ RSpec.describe ParseDate::IntFromString do
     end
   end
 
-  context "latest_year" do
+  context 'latest_year' do
     single_year
       .merge(specific_month)
       .merge(specific_day)
