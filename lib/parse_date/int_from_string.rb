@@ -18,7 +18,9 @@ class ParseDate
     def self.earliest_year(orig_date_str)
       return if orig_date_str == '0000-00-00' # shpc collection has these useless dates
       # B.C. first in case there are 4 digits, e.g. 1600 B.C.
-      return ParseDate.send(:year_int_for_bc, orig_date_str) if orig_date_str.match(BC_REGEX)
+      return ParseDate.send(:between_bc_earliest_year, orig_date_str) if orig_date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEXP)
+      return ParseDate.send(:year_int_for_bc, orig_date_str) if orig_date_str.match(YEAR_BC_REGEX)
+      return ParseDate.send(:between_earliest_year, orig_date_str) if orig_date_str.match(BETWEEN_Yn_AND_Yn_REGEXP)
 
       result = ParseDate.send(:first_four_digits, orig_date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, orig_date_str)
@@ -45,8 +47,9 @@ class ParseDate
       return if orig_date_str == '0000-00-00' # shpc collection has these useless dates
 
       # B.C. first in case there are 4 digits, e.g. 1600 B.C.
-      # NOTE:  may want to parse for last occurence of 4 consecutive digits
+      return ParseDate.send(:between_bc_latest_year, orig_date_str) if orig_date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEXP)
       return ParseDate.send(:year_int_for_bc, orig_date_str) if orig_date_str.match(BC_REGEX)
+      return ParseDate.send(:between_latest_year, orig_date_str) if orig_date_str.match(BETWEEN_Yn_AND_Yn_REGEXP)
 
       # NOTE:  may want to parse for last occurence of 4 consecutive digits
       result = ParseDate.send(:first_four_digits, orig_date_str)
@@ -154,14 +157,49 @@ class ParseDate
       return "#{(Regexp.last_match(1).to_i - 1).to_s}99" if orig_date_str.match(CENTURY_WORD_REGEXP)
     end
 
+    BETWEEN_Yn_AND_Yn_REGEXP = Regexp.new(/between\s+(?<first>\d{1,4})\??\s+and\s+(?<last>\d{1,4})\??/im)
+
+    # Integer value for earliest if we have "between y and y" pattern
+    # NOTE: must match for BC first with between_bc_earliest_year
+    # @return [Integer, nil] -ddd if orig_date_str matches pattern; nil otherwise
+    def between_earliest_year(orig_date_str)
+      matches = orig_date_str.match(BETWEEN_Yn_AND_Yn_REGEXP) if orig_date_str
+      Regexp.last_match(:first).to_i if matches
+    end
+
+    # Integer value for latest year if we have "between y and y" pattern
+    # NOTE: must match for BC first with between_bc_latest_year
+    # @return [Integer, nil] -ddd if orig_date_str matches pattern; nil otherwise
+    def between_latest_year(orig_date_str)
+      matches = orig_date_str.match(BETWEEN_Yn_AND_Yn_REGEXP) if orig_date_str
+      Regexp.last_match(:last).to_i if matches
+    end
+
     BC_REGEX = Regexp.new(/\s*B\.?\s*C\.?/)
     YEAR_BC_REGEX = Regexp.new("(\\d{1,4})#{BC_REGEX}")
 
-    # Integer sortable value for B.C. if we have B.C. pattern
-    # @return [Integer, nil] Integer sortable -ddd if B.C. in pattern; nil otherwise
+    # Integer value for B.C. if we have B.C. pattern
+    # @return [Integer, nil] Integer -ddd if B.C. in pattern; nil otherwise
     def year_int_for_bc(orig_date_str)
       bc_matches = orig_date_str.match(YEAR_BC_REGEX) if orig_date_str
       "-#{Regexp.last_match(1)}".to_i if bc_matches
+    end
+
+    REGEX_OPTS = Regexp::IGNORECASE | Regexp::MULTILINE
+    BETWEEN_Yn_AND_Yn_BC_REGEXP = Regexp.new("#{BETWEEN_Yn_AND_Yn_REGEXP}#{BC_REGEX}", REGEX_OPTS)
+
+    # Integer value for earliest year if we have "between y and y B.C." pattern
+    # @return [Integer, nil] -ddd if orig_date_str matches pattern; nil otherwise
+    def between_bc_earliest_year(orig_date_str)
+      matches = orig_date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEXP) if orig_date_str
+      "-#{Regexp.last_match(:first)}".to_i if matches
+    end
+
+    # Integer value for latest year if we have "between y and y B.C." pattern
+    # @return [Integer, nil] -ddd if orig_date_str matches pattern; nil otherwise
+    def between_bc_latest_year(orig_date_str)
+      matches = orig_date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEXP) if orig_date_str
+      "-#{Regexp.last_match(:last)}".to_i if matches
     end
 
     EARLY_NUMERIC = Regexp.new('^\-?\d{1,3}$')

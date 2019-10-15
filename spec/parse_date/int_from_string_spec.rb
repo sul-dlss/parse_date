@@ -413,6 +413,23 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
+    { # example string as key, expected result as value
+      'between 2000 and 1000 B.C.' => -2000,
+      'between 300 and 150 BC.' => -300,
+      'between 30 and 15 BC' => -30,
+      'between 3 and 1 B. C.' => -3,
+      'between 1000 and 2000' => 1000,
+      'between 1694 and 1799?' => 1694,
+      'between 1600? and 1683' => 1600,
+      'between 150 and 300' => 150,
+      'between 15 and 30' => 15,
+      'between 1 and 5' => 1
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
+        expect(ParseDate.earliest_year(example)).to eq expected
+      end
+    end
+
     it 'nil for -1666' do
       skip('code broken for -yyyy dates but no existing data for this yet')
       expect(ParseDate.earliest_year('-1666')).to eq nil
@@ -484,6 +501,23 @@ RSpec.describe ParseDate::IntFromString do
 
     early_numeric_dates.each do |example, expected|
       it "#{example} for #{example}" do
+        expect(ParseDate.latest_year(example)).to eq expected
+      end
+    end
+
+    { # example string as key, expected result as value
+      'between 2000 and 1000 B.C' => -1000,
+      'between 300 and 150 B.C.' => -150,
+      'between 30 and 15 BC' => -15,
+      'between 3 and 1 B. C.' => -1,
+      'between 1000 and 2000' => 2000,
+      'between 1694 and 1799?' => 1799,
+      'between 1600? and 1683' => 1683,
+      'between 150 and 300' => 300,
+      'between 15 and 30' => 30,
+      'between 1 and 5' => 5
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
         expect(ParseDate.latest_year(example)).to eq expected
       end
     end
@@ -632,6 +666,70 @@ RSpec.describe ParseDate::IntFromString do
       bc_dates_to_int.each do |example, expected|
         it "#{expected} for #{example}" do
           expect(ParseDate.send(:year_int_for_bc, example)).to eq expected
+        end
+      end
+    end
+
+    context '#between_bc_earliest_year' do
+      { # example string as key, expected result as value
+        'between 2000 and 1000 B.C' => -2000,
+        'between 300 and 150 B.C' => -300,
+        'between 30 and 15 B.C' => -30,
+        'between 3 and 1 B.C' => -3,
+        'between 3 and 1 B.C.' => -3,
+        'between 3 and 1 B. C.' => -3,
+        'between 3 and 1 BC.' => -3,
+        'Between 3 and 1 BC' => -3,
+        'Between 650 and 750' => nil
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:between_bc_earliest_year, example)).to eq expected
+        end
+      end
+    end
+
+    context '#between_bc_latest_year' do
+      { # example string as key, expected result as value
+        'between 2000 and 1000 B.C' => -1000,
+        'between 300 and 150 B.C' => -150,
+        'between 30 and 15 B.C' => -15,
+        'between 3 and 1 B.C' => -1,
+        'between 3 and 1 B.C.' => -1,
+        'between 3 and 1 B. C.' => -1,
+        'between 3 and 1 BC.' => -1,
+        'Between 3 and 1 BC' => -1,
+        'Between 1 and 3' => nil
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:between_bc_latest_year, example)).to eq expected
+        end
+      end
+    end
+
+    context '#between_earliest_year' do
+      { # example string as key, expected result as value
+        'between 1000 and 2000' => 1000,
+        'between 150 and 300' => 150,
+        'between 15 and 30' => 15,
+        'between 1 and 5' => 1,
+        'Between 850 and 750 BC' => 850 # NOTE: must match for BC first
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:between_earliest_year, example)).to eq expected
+        end
+      end
+    end
+
+    context '#between_latest_year' do
+      { # example string as key, expected result as value
+        'between 1000 and 2000' => 2000,
+        'between 150 and 300' => 300,
+        'between 15 and 30' => 30,
+        'between 1 and 5' => 5,
+        'Between 850 and 750 BC' => 750 # NOTE: must match for BC first
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:between_latest_year, example)).to eq expected
         end
       end
     end
