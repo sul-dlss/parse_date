@@ -154,12 +154,13 @@ class ParseDate
       return "#{(Regexp.last_match(1).to_i - 1).to_s}99" if orig_date_str.match(CENTURY_WORD_REGEXP)
     end
 
-    BC_REGEX = Regexp.new('(\d{1,4}).*' + Regexp.escape('B.C.'))
+    BC_REGEX = Regexp.new(/\s*B\.?\s*C\.?/)
+    YEAR_BC_REGEX = Regexp.new("(\\d{1,4})#{BC_REGEX}")
 
     # Integer sortable value for B.C. if we have B.C. pattern
     # @return [Integer, nil] Integer sortable -ddd if B.C. in pattern; nil otherwise
     def year_int_for_bc(orig_date_str)
-      bc_matches = orig_date_str.match(BC_REGEX) if orig_date_str
+      bc_matches = orig_date_str.match(YEAR_BC_REGEX) if orig_date_str
       "-#{Regexp.last_match(1)}".to_i if bc_matches
     end
 
