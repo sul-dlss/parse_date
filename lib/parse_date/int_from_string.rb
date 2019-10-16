@@ -16,6 +16,7 @@ class ParseDate
     #   1/1/27  ->  1927
     # @return [Integer, nil] Integer year if we could parse one, nil otherwise
     def self.earliest_year(date_str)
+      return unless date_str && !date_str.empty?
       return if date_str == '0000-00-00' # shpc collection has these useless dates
       # B.C. first in case there are 4 digits, e.g. 1600 B.C.
       return ParseDate.send(:between_bc_earliest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEXP)
@@ -44,6 +45,7 @@ class ParseDate
     #   1/1/27  ->  1927
     # @return [Integer, nil] Integer year if we could parse one, nil otherwise
     def self.latest_year(date_str)
+      return unless date_str && !date_str.empty?
       return if date_str == '0000-00-00' # shpc collection has these useless dates
 
       # B.C. first in case there are 4 digits, e.g. 1600 B.C.
@@ -86,7 +88,7 @@ class ParseDate
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if date_str has yyyy, nil otherwise
     def first_four_digits(date_str)
-      matches = date_str.match(/\d{4}/) if date_str
+      matches = date_str.match(/\d{4}/)
       matches&.to_s
     end
 
@@ -97,8 +99,6 @@ class ParseDate
     #   1/1/27  ->  1927
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if date_str matches pattern, nil otherwise
     def year_from_mm_dd_yy(date_str)
-      return unless date_str
-
       slash_matches = date_str.match(/\d{1,2}\/\d{1,2}\/\d{2}/)
       if slash_matches
         date_obj = Date.strptime(date_str, '%m/%d/%y')
@@ -118,7 +118,7 @@ class ParseDate
     #   note that these are the only decade patterns found in our actual date strings in MODS records
     # @return [String, nil] 4 digit year (e.g. 1860, 1950) if date_str matches pattern, nil otherwise
     def first_year_for_decade(date_str)
-      decade_matches = date_str.match(DECADE_4CHAR_REGEXP) if date_str
+      decade_matches = date_str.match(DECADE_4CHAR_REGEXP)
       changed_to_zero = decade_matches.to_s.tr('u\-?x', '0') if decade_matches
       ParseDate.first_four_digits(changed_to_zero) if changed_to_zero
     end
@@ -127,7 +127,7 @@ class ParseDate
     #   note that these are the only decade patterns found in our actual date strings in MODS records
     # @return [String, nil] 4 digit year (e.g. 1860, 1950) if date_str matches pattern, nil otherwise
     def last_year_for_decade(date_str)
-      decade_matches = date_str.match(DECADE_4CHAR_REGEXP) if date_str
+      decade_matches = date_str.match(DECADE_4CHAR_REGEXP)
       changed_to_nine = decade_matches.to_s.tr('u\-?x', '9') if decade_matches
       ParseDate.first_four_digits(changed_to_nine) if changed_to_nine
     end
@@ -139,7 +139,6 @@ class ParseDate
     #   note that these are the only century patterns found in our actual date strings in MODS records
     # @return [String, nil] yy00 if date_str matches pattern, nil otherwise; also nil if B.C. in pattern
     def first_year_for_century(date_str)
-      return unless date_str
       return if date_str =~ /B\.C\./
       return "#{Regexp.last_match(1)}00" if date_str.match(CENTURY_4CHAR_REGEXP)
       return "#{(Regexp.last_match(1).to_i - 1).to_s}00" if date_str.match(CENTURY_WORD_REGEXP)
@@ -149,7 +148,6 @@ class ParseDate
     #   note that these are the only century patterns found in our actual date strings in MODS records
     # @return [String, nil] yy00 if date_str matches pattern, nil otherwise; also nil if B.C. in pattern
     def last_year_for_century(date_str)
-      return unless date_str
       return if date_str =~ /B\.C\./
       return "#{Regexp.last_match(1)}99" if date_str.match(CENTURY_4CHAR_REGEXP)
 
@@ -163,7 +161,7 @@ class ParseDate
     # NOTE: must match for BC first with between_bc_earliest_year
     # @return [Integer, nil] -ddd if date_str matches pattern; nil otherwise
     def between_earliest_year(date_str)
-      matches = date_str.match(BETWEEN_Yn_AND_Yn_REGEXP) if date_str
+      matches = date_str.match(BETWEEN_Yn_AND_Yn_REGEXP)
       Regexp.last_match(:first).to_i if matches
     end
 
@@ -171,7 +169,7 @@ class ParseDate
     # NOTE: must match for BC first with between_bc_latest_year
     # @return [Integer, nil] -ddd if date_str matches pattern; nil otherwise
     def between_latest_year(date_str)
-      matches = date_str.match(BETWEEN_Yn_AND_Yn_REGEXP) if date_str
+      matches = date_str.match(BETWEEN_Yn_AND_Yn_REGEXP)
       Regexp.last_match(:last).to_i if matches
     end
 
@@ -181,7 +179,7 @@ class ParseDate
     # Integer value for B.C. if we have B.C. pattern
     # @return [Integer, nil] Integer -ddd if B.C. in pattern; nil otherwise
     def year_int_for_bc(date_str)
-      bc_matches = date_str.match(YEAR_BC_REGEX) if date_str
+      bc_matches = date_str.match(YEAR_BC_REGEX)
       "-#{Regexp.last_match(1)}".to_i if bc_matches
     end
 
@@ -191,14 +189,14 @@ class ParseDate
     # Integer value for earliest year if we have "between y and y B.C." pattern
     # @return [Integer, nil] -ddd if date_str matches pattern; nil otherwise
     def between_bc_earliest_year(date_str)
-      matches = date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEXP) if date_str
+      matches = date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEXP)
       "-#{Regexp.last_match(:first)}".to_i if matches
     end
 
     # Integer value for latest year if we have "between y and y B.C." pattern
     # @return [Integer, nil] -ddd if date_str matches pattern; nil otherwise
     def between_bc_latest_year(date_str)
-      matches = date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEXP) if date_str
+      matches = date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEXP)
       "-#{Regexp.last_match(:last)}".to_i if matches
     end
 

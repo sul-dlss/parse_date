@@ -600,7 +600,7 @@ RSpec.describe ParseDate::IntFromString do
         .push(*decade_only.keys)
         .push(*century_only).each do |example|
         it "nil for #{example}" do
-          expect(ParseDate.send(:first_four_digits, example)).to eq nil
+          expect(ParseDate.send(:first_four_digits, example)).to eq nil if example
         end
       end
     end
