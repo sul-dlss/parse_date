@@ -345,14 +345,15 @@ RSpec.describe ParseDate::IntFromString do
     '186?' => ['1860', '1861', '1862', '1863', '1864', '1865', '1866', '1867', '1868', '1869'],
     '195x' => ['1950', '1951', '1952', '1953', '1954', '1955', '1956', '1957', '1958', '1959']
   }
-  century_only = {
-    '18th century CE' => '18th century',
-    '17uu' => '18th century',
-    '17--?]' => '18th century',
-    '17--]' => '18th century',
-    '[17--]' => '18th century',
-    '[17--?]' => '18th century'
-  }
+  century_only = [
+    '18th century CE',
+    '17uu',
+    '17--',
+    '17--?]',
+    '17--]',
+    '[17--]',
+    '[17--?]'
+  ]
   brackets_in_middle_of_year = {
     '169[5]' => '1695',
     'October 3, [18]91' => '1891'
@@ -401,7 +402,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    century_only.keys.each do |example|
+    century_only.each do |example|
       it "1700 from #{example}" do
         expect(ParseDate.earliest_year(example)).to eq 1700
       end
@@ -421,6 +422,7 @@ RSpec.describe ParseDate::IntFromString do
       'between 1000 and 2000' => 1000,
       'between 1694 and 1799?' => 1694,
       'between 1600? and 1683' => 1600,
+      'between 1500 and 1799?)' => 1500,
       'between 150 and 300' => 150,
       'between 15 and 30' => 15,
       'between 1 and 5' => 1
@@ -493,7 +495,7 @@ RSpec.describe ParseDate::IntFromString do
     #   end
     # end
 
-    century_only.keys.each do |example|
+    century_only.each do |example|
       it "1799 from #{example}" do
         expect(ParseDate.latest_year(example)).to eq 1799
       end
@@ -513,6 +515,7 @@ RSpec.describe ParseDate::IntFromString do
       'between 1000 and 2000' => 2000,
       'between 1694 and 1799?' => 1799,
       'between 1600? and 1683' => 1683,
+      'between 1500 and 1799?)' => 1799,
       'between 150 and 300' => 300,
       'between 15 and 30' => 30,
       'between 1 and 5' => 5
@@ -595,7 +598,7 @@ RSpec.describe ParseDate::IntFromString do
         .push(*brackets_in_middle_of_year.keys)
         .push(*specific_day_2_digit_year.keys)
         .push(*decade_only.keys)
-        .push(*century_only.keys).each do |example|
+        .push(*century_only).each do |example|
         it "nil for #{example}" do
           expect(ParseDate.send(:first_four_digits, example)).to eq nil
         end
@@ -649,7 +652,7 @@ RSpec.describe ParseDate::IntFromString do
     end
 
     context '#first_year_for_century' do
-      century_only.keys.each do |example|
+      century_only.each do |example|
         it "1700 from #{example}" do
           expect(ParseDate.send(:first_year_for_century, example)).to eq '1700'
         end
