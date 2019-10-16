@@ -42,6 +42,11 @@ ParseDate.earliest_year('197?') # 1970
 ParseDate.earliest_year('196x') # 1960
 ParseDate.earliest_year('18th century CE') # 1700
 ParseDate.earliest_year('17uu') # 1700
+ParseDate.earliest_year('between 1694 and 1799') # 1694
+ParseDate.earliest_year('between 1 and 5') # 1
+ParseDate.earliest_year('between 300 and 150 B.C.') # -300
+ParseDate.earliest_year('1496-1499') # 1496
+ParseDate.earliest_year('1750?-1867') # 1750
 
 ParseDate.latest_year('195-') # 1959
 ParseDate.latest_year('199u') # 1999
@@ -49,6 +54,11 @@ ParseDate.latest_year('197?') # 1979
 ParseDate.latest_year('196x') # 1969
 ParseDate.latest_year('18th century CE') # 1799
 ParseDate.latest_year('17uu') # 1799
+ParseDate.latest_year('between 1694 and 1799') # 1799
+ParseDate.latest_year('between 1 and 5') # 5
+ParseDate.latest_year('between 300 and 150 B.C.') # -150
+ParseDate.latest_year('1496-1499') # 1499
+ParseDate.latest_year('1750?-1867') # 1867
 
 ParseDate.year_int_valid?(0) # true
 ParseDate.year_int_valid?(5) # true

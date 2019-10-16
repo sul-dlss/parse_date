@@ -379,7 +379,7 @@ RSpec.describe ParseDate::IntFromString do
     '8 B.C.' => -8
   }
 
-  context '#earliest_year' do
+  context '.earliest_year' do
     single_year
       .merge(specific_month)
       .merge(specific_day)
@@ -399,6 +399,19 @@ RSpec.describe ParseDate::IntFromString do
       .merge(decade_only_4_digits).each do |example, expected|
       it "#{expected.first} for multi-value #{example}" do
         expect(ParseDate.earliest_year(example)).to eq expected.first.to_i
+      end
+    end
+
+    { # example string as key, expected result as value
+      '1496-1499' => 1496,
+      '1496 - 1499' => 1496,
+      '1750?-1867' => 1750,
+      '1265-1371?' => 1265,
+      'ca. 1400-1525' => 1400,
+      'between 1750-1800?' => 1750,
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
+        expect(ParseDate.earliest_year(example)).to eq expected
       end
     end
 
@@ -453,7 +466,7 @@ RSpec.describe ParseDate::IntFromString do
     end
   end
 
-  context 'latest_year' do
+  context '.latest_year' do
     single_year
       .merge(specific_month)
       .merge(specific_day)
@@ -464,6 +477,19 @@ RSpec.describe ParseDate::IntFromString do
       .merge(invalid_but_can_get_year).each do |example, expected|
       it "#{expected} for single value #{example}" do
         expect(ParseDate.latest_year(example)).to eq expected.to_i
+      end
+    end
+
+    { # example string as key, expected result as value
+      '1496-1499' => 1499,
+      '1496 - 1499' => 1499,
+      '1750?-1867' => 1867,
+      '1265-1371?' => 1371,
+      'ca. 1400-1525' => 1525,
+      'between 1750-1800?' => 1800,
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
+        expect(ParseDate.latest_year(example)).to eq expected
       end
     end
 
@@ -546,7 +572,7 @@ RSpec.describe ParseDate::IntFromString do
     end
   end
 
-  context '#year_int_valid?' do
+  context '.year_int_valid?' do
     { # example int as key, expected result as value
       -1666 => false,
       -999 => true,
@@ -573,7 +599,43 @@ RSpec.describe ParseDate::IntFromString do
     end
   end
 
-  describe 'private instance methods - tests illustrate some nuances' do
+  describe 'private instance methods - tests illustrate some nuances/make development easier' do
+    context '#hyphen_4digit_earliest_year' do
+      { # example string as key, expected result as value
+        '1496-1499' => 1496,
+        '1496 - 1499' => 1496,
+        '1750?-1867' => 1750,
+        '1265-1371?' => 1265,
+        'ca. 1400-1525' => 1400,
+        'between 1750-1800?' => 1750,
+        '1966-2-5' => nil,
+        '1888-02-18' => nil,
+        '1975-05' => nil,
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:hyphen_4digit_earliest_year, example)).to eq expected
+        end
+      end
+    end
+
+    context '#hyphen_4digit_latest_year' do
+      { # example string as key, expected result as value
+        '1496-1499' => 1499,
+        '1496 - 1499' => 1499,
+        '1750?-1867' => 1867,
+        '1265-1371?' => 1371,
+        'ca. 1400-1525' => 1525,
+        'between 1750-1800?' => 1800,
+        '1966-2-5' => nil,
+        '1888-02-18' => nil,
+        '1975-05' => nil,
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:hyphen_4digit_latest_year, example)).to eq expected
+        end
+      end
+    end
+
     context '#first_four_digits' do
       single_year
         .merge(specific_month)
