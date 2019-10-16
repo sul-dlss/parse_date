@@ -37,4 +37,16 @@ class ParseDate
   def self.year_int_valid?(date_str)
     ParseDate::IntFromString.year_int_valid?(date_str)
   end
+
+  # true if:
+  #   both years are not newer than (current year + 2)
+  #   first_year <= last_year
+  # false otherwise
+  def self.year_range_valid?(first_year, last_year)
+    upper_bound = Date.today.year + 2
+    return false if first_year > upper_bound || last_year > upper_bound
+    return false if first_year > last_year
+
+    true
+  end
 end

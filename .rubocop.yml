@@ -15,6 +15,13 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Max: 20
 
+Style/NumericLiterals:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Exclude:
+    - spec/**/*
+
 Style/WordArray:
   Enabled: false
 
