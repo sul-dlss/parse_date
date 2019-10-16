@@ -26,15 +26,15 @@ class ParseDate
   extend ParseDate::IntFromString
 
   # class method delegation
-  def self.earliest_year(orig_date_str)
-    ParseDate::IntFromString.earliest_year(orig_date_str)
+  def self.earliest_year(date_str)
+    ParseDate::IntFromString.earliest_year(date_str)
   end
 
-  def self.latest_year(orig_date_str)
-    ParseDate::IntFromString.latest_year(orig_date_str)
+  def self.latest_year(date_str)
+    ParseDate::IntFromString.latest_year(date_str)
   end
 
-  def self.year_int_valid?(orig_date_str)
-    ParseDate::IntFromString.year_int_valid?(orig_date_str)
+  def self.year_int_valid?(date_str)
+    ParseDate::IntFromString.year_int_valid?(date_str)
   end
 end
