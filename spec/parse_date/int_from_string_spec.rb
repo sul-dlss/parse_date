@@ -379,7 +379,7 @@ RSpec.describe ParseDate::IntFromString do
     '8 B.C.' => -8
   }
 
-  context '#earliest_year' do
+  context '.earliest_year' do
     single_year
       .merge(specific_month)
       .merge(specific_day)
@@ -453,7 +453,7 @@ RSpec.describe ParseDate::IntFromString do
     end
   end
 
-  context 'latest_year' do
+  context '.latest_year' do
     single_year
       .merge(specific_month)
       .merge(specific_day)
@@ -546,7 +546,7 @@ RSpec.describe ParseDate::IntFromString do
     end
   end
 
-  context '#year_int_valid?' do
+  context '.year_int_valid?' do
     { # example int as key, expected result as value
       -1666 => false,
       -999 => true,
