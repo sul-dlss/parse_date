@@ -23,7 +23,8 @@ class ParseDate
       return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
       return ParseDate.send(:between_earliest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_REGEX)
 
-      result = ParseDate.send(:first_four_digits, date_str)
+      result = ParseDate.send(:hyphen_4digit_earliest_year, date_str)
+      result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
       result ||= ParseDate.send(:first_year_for_decade, date_str) # 19xx or 20xx
       result ||= ParseDate.send(:first_year_for_century, date_str)
@@ -53,8 +54,8 @@ class ParseDate
       return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(BC_REGEX)
       return ParseDate.send(:between_latest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_REGEX)
 
-      # NOTE:  may want to parse for last occurence of 4 consecutive digits
-      result = ParseDate.send(:first_four_digits, date_str)
+      result = ParseDate.send(:hyphen_4digit_latest_year, date_str)
+      result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
       result ||= ParseDate.send(:last_year_for_decade, date_str) # 19xx or 20xx
       # NOTE:  may want to parse for last occurence of consecutive digits
@@ -83,6 +84,22 @@ class ParseDate
     # removes brackets between digits such as 169[5] or [18]91
     def remove_brackets(date_str)
       date_str.delete('[]') if date_str.match(BRACKETS_BETWEEN_DIGITS_REGEX)
+    end
+
+    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{1,4})\??/)
+
+    # Integer value for earliest if we have "yyyy-yyyy" pattern
+    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    def hyphen_4digit_earliest_year(date_str)
+      matches = date_str.match(YYYY_HYPHEN_YYYY_REGEX)
+      Regexp.last_match(:first).to_i if matches && Regexp.last_match(:first).length == Regexp.last_match(:last).length
+    end
+
+    # Integer value for latest year if we have "yyyy-yyyy" pattern
+    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    def hyphen_4digit_latest_year(date_str)
+      matches = date_str.match(YYYY_HYPHEN_YYYY_REGEX)
+      Regexp.last_match(:last).to_i if matches && Regexp.last_match(:first).length == Regexp.last_match(:last).length
     end
 
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
