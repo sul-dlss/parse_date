@@ -503,6 +503,10 @@ RSpec.describe ParseDate::IntFromString do
       'between 1750-1800?' => 1800,
       '1757-58' => 1758,
       '1675-76?' => 1676,
+      '1835 or 1836' => 1836,
+      '17-- or 18--' => 1899,
+      '15-- or 16--?' => 1699,
+      # '17th or 18th century?' => 1799,  # not yet implemented
     }.each do |example, expected|
       it "#{expected} for #{example}" do
         expect(ParseDate.latest_year(example)).to eq expected
