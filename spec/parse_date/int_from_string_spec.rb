@@ -421,6 +421,16 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
+    {
+      '17--?-18--?' => 1700,
+      '17--? - 18--?' => 1700,
+      '12--? -13--?' => 1200
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
+        expect(ParseDate.earliest_year(example)).to eq expected
+      end
+    end
+
     early_numeric_dates.each do |example, expected|
       it "#{example} for #{example}" do
         expect(ParseDate.earliest_year(example)).to eq expected
@@ -526,6 +536,16 @@ RSpec.describe ParseDate::IntFromString do
     century_only.each do |example|
       it "1799 from #{example}" do
         expect(ParseDate.latest_year(example)).to eq 1799
+      end
+    end
+
+    {
+      '17--?-18--?' => 1899,
+      '17--? - 18--?' => 1899,
+      '12--? -13--?' => 1399
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
+        expect(ParseDate.latest_year(example)).to eq expected
       end
     end
 
@@ -653,6 +673,18 @@ RSpec.describe ParseDate::IntFromString do
       }.each do |example, expected|
         it "#{expected} for #{example}" do
           expect(ParseDate.send(:hyphen_2digit_latest_year, example)).to eq expected
+        end
+      end
+    end
+
+    context '#yyuu_after_hyphen' do
+      {
+        '17--?-18--?' => 1899,
+        '17--? - 18--?' => 1899,
+        '12--? -13--?' => 1399
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:yyuu_after_hyphen, example)).to eq expected
         end
       end
     end

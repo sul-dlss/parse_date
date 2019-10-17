@@ -56,6 +56,7 @@ class ParseDate
 
       result = ParseDate.send(:hyphen_4digit_latest_year, date_str)
       result ||= ParseDate.send(:hyphen_2digit_latest_year, date_str)
+      result ||= ParseDate.send(:yyuu_after_hyphen, date_str)
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
       result ||= ParseDate.send(:last_year_for_decade, date_str) # 19xx or 20xx
@@ -80,6 +81,7 @@ class ParseDate
 
     protected
 
+    REGEX_OPTS = Regexp::IGNORECASE | Regexp::MULTILINE
     BRACKETS_BETWEEN_DIGITS_REGEX = Regexp.new('\d[' + Regexp.escape('[]') + ']\d')
 
     # removes brackets between digits such as 169[5] or [18]91
@@ -87,7 +89,7 @@ class ParseDate
       date_str.delete('[]') if date_str.match(BRACKETS_BETWEEN_DIGITS_REGEX)
     end
 
-    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{1,4})\??/)
+    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{1,4})\??/m)
 
     # Integer value for earliest if we have "yyyy-yyyy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
@@ -117,6 +119,16 @@ class ParseDate
       last.to_i if ParseDate.year_range_valid?(first.to_i, last.to_i)
     end
 
+    YYUU = '\\d{1,2}[u\\-]{2}'
+    YYuu_HYPHEN_YYuu_REGEX = Regexp.new("(?<first>#{YYUU})\\??\\s*-\\s*(?<last>#{YYUU})\\??([^u\\-]|$)??", REGEX_OPTS)
+
+    # Integer value for latest year if we have "yyuu-yyuu" pattern
+    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    def yyuu_after_hyphen(date_str)
+      matches = date_str.match(YYuu_HYPHEN_YYuu_REGEX)
+      latest_year(Regexp.last_match(:last)) if matches
+    end
+
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if date_str has yyyy, nil otherwise
     def first_four_digits(date_str)
@@ -144,7 +156,7 @@ class ParseDate
       nil # explicitly want nil if date won't parse
     end
 
-    DECADE_4CHAR_REGEX = Regexp.new('(^|\D)\d{3}[u\-?x]')
+    DECADE_4CHAR_REGEX = Regexp.new('(^|\D)\d{3}[u\-?x]', REGEX_OPTS)
 
     # first year of decade (as String) if we have:  yyyu, yyy-, yyy? or yyyx pattern
     #   note that these are the only decade patterns found in our actual date strings in MODS records
@@ -164,8 +176,8 @@ class ParseDate
       ParseDate.first_four_digits(changed_to_nine) if changed_to_nine
     end
 
-    CENTURY_WORD_REGEX = Regexp.new('(\d{1,2}).*century')
-    CENTURY_4CHAR_REGEX = Regexp.new('(\d{1,2})[u\-]{2}([^u\-]|$)')
+    CENTURY_WORD_REGEX = Regexp.new('(\d{1,2}).*century', REGEX_OPTS)
+    CENTURY_4CHAR_REGEX = Regexp.new('(\d{1,2})[u\-]{2}([^u\-]|$)', REGEX_OPTS)
 
     # first year of century (as String) if we have:  yyuu, yy--, yy--? or xxth century pattern
     #   note that these are the only century patterns found in our actual date strings in MODS records
@@ -205,8 +217,8 @@ class ParseDate
       Regexp.last_match(:last).to_i if matches
     end
 
-    BC_REGEX = Regexp.new(/\s*B\.?\s*C\.?/)
-    YEAR_BC_REGEX = Regexp.new("(\\d{1,4})#{BC_REGEX}")
+    BC_REGEX = Regexp.new(/\s*B\.?\s*C\.?/im)
+    YEAR_BC_REGEX = Regexp.new("(\\d{1,4})#{BC_REGEX}", REGEX_OPTS)
 
     # Integer value for B.C. if we have B.C. pattern
     # @return [Integer, nil] -ddd if B.C. in pattern; nil otherwise
@@ -215,7 +227,6 @@ class ParseDate
       "-#{Regexp.last_match(1)}".to_i if bc_matches
     end
 
-    REGEX_OPTS = Regexp::IGNORECASE | Regexp::MULTILINE
     BETWEEN_Yn_AND_Yn_BC_REGEX = Regexp.new("#{BETWEEN_Yn_AND_Yn_REGEX}#{BC_REGEX}", REGEX_OPTS)
 
     # Integer value for earliest year if we have "between y and y B.C." pattern
@@ -232,7 +243,7 @@ class ParseDate
       "-#{Regexp.last_match(:last)}".to_i if matches
     end
 
-    EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}$')
+    EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}$', REGEX_OPTS)
 
     # year if date_str contains yyy, yy, y, -y, -yy, -yyy, -yyyy
     # @return [String, nil] year if date_str matches pattern; nil otherwise
