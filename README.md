@@ -67,8 +67,8 @@ ParseDate.latest_year('1975-05') # 1975 (range invalid)
 ParseDate.year_range_valid?()
 ParseDate.year_range_valid?(1975, 1905) # false, first year > last year
 ParseDate.year_range_valid?(-100, -150) # false, first year > last year
-ParseDate.year_range_valid?(2050, 2070) # false, years later than current year + 2
-ParseDate.year_range_valid?(2007, 2050) # false, year later than current year + 2
+ParseDate.year_range_valid?(2050, 2070) # false, year later than current year + 1
+ParseDate.year_range_valid?(2007, 2050) # false, year later than current year + 1
 ParseDate.year_range_valid?(2007, 2009) # true
 ParseDate.year_range_valid?(75, 150) # true
 ParseDate.year_range_valid?(-3, 2) # true
