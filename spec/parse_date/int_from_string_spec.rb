@@ -630,24 +630,6 @@ RSpec.describe ParseDate::IntFromString do
   end
 
   context 'private instance methods - tests illustrate some nuances/make development easier' do
-    describe '#hyphen_4digit_earliest_year' do
-      { # example string as key, expected result as value
-        '1496-1499' => 1496,
-        '1496 - 1499' => 1496,
-        '1750?-1867' => 1750,
-        '1265-1371?' => 1265,
-        'ca. 1400-1525' => 1400,
-        'between 1750-1800?' => 1750,
-        '1966-2-5' => nil,
-        '1888-02-18' => nil,
-        '1975-05' => nil,
-      }.each do |example, expected|
-        it "#{expected} for #{example}" do
-          expect(ParseDate.send(:hyphen_4digit_earliest_year, example)).to eq expected
-        end
-      end
-    end
-
     describe '#hyphen_4digit_latest_year' do
       { # example string as key, expected result as value
         '1496-1499' => 1499,
