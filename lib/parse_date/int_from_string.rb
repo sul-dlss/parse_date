@@ -71,7 +71,7 @@ class ParseDate
       result.to_i if result && year_int_valid?(result.to_i)
     end
 
-    # true if the year is between -999 and (current year + 2)
+    # true if the year is between -999 and (current year + 1), inclusive
     # @return [Boolean] true if the year is between -999 and (current year + 1); false otherwise
     def self.year_int_valid?(year)
       return false unless year.is_a? Integer
@@ -95,14 +95,22 @@ class ParseDate
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def hyphen_4digit_earliest_year(date_str)
       matches = date_str.match(YYYY_HYPHEN_YYYY_REGEX)
-      Regexp.last_match(:first).to_i if matches && Regexp.last_match(:first).length == Regexp.last_match(:last).length
+      return unless matches
+
+      first = Regexp.last_match(:first).to_i
+      last = Regexp.last_match(:last).to_i
+      first if ParseDate.year_range_valid?(first, last)
     end
 
     # Integer value for latest year if we have "yyyy-yyyy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def hyphen_4digit_latest_year(date_str)
       matches = date_str.match(YYYY_HYPHEN_YYYY_REGEX)
-      Regexp.last_match(:last).to_i if matches && Regexp.last_match(:first).length == Regexp.last_match(:last).length
+      return unless matches
+
+      first = Regexp.last_match(:first).to_i
+      last = Regexp.last_match(:last).to_i
+      last if ParseDate.year_range_valid?(first, last)
     end
 
     YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{2})\??([^-0-9].*)?$/)
@@ -126,7 +134,7 @@ class ParseDate
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def yyuu_after_hyphen(date_str)
       matches = date_str.match(YYuu_HYPHEN_YYuu_REGEX)
-      latest_year(Regexp.last_match(:last)) if matches
+      last_year_for_century(Regexp.last_match(:last)).to_i if matches
     end
 
     # looks for 4 consecutive digits in date_str and returns first occurrence if found

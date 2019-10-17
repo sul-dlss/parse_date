@@ -39,7 +39,7 @@ class ParseDate
   end
 
   # true if:
-  #   both years are not newer than (current year + 2)
+  #   both years are not newer than (current year + 1)
   #   first_year <= last_year
   # false otherwise
   def self.year_range_valid?(first_year, last_year)

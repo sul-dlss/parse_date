@@ -379,7 +379,7 @@ RSpec.describe ParseDate::IntFromString do
     '8 B.C.' => -8
   }
 
-  context '.earliest_year' do
+  describe '.earliest_year' do
     single_year
       .merge(specific_month)
       .merge(specific_day)
@@ -476,7 +476,7 @@ RSpec.describe ParseDate::IntFromString do
     end
   end
 
-  context '.latest_year' do
+  describe '.latest_year' do
     single_year
       .merge(specific_month)
       .merge(specific_day)
@@ -594,7 +594,7 @@ RSpec.describe ParseDate::IntFromString do
     end
   end
 
-  context '.year_int_valid?' do
+  describe '.year_int_valid?' do
     { # example int as key, expected result as value
       -1666 => false,
       -999 => true,
@@ -621,8 +621,8 @@ RSpec.describe ParseDate::IntFromString do
     end
   end
 
-  describe 'private instance methods - tests illustrate some nuances/make development easier' do
-    context '#hyphen_4digit_earliest_year' do
+  context 'private instance methods - tests illustrate some nuances/make development easier' do
+    describe '#hyphen_4digit_earliest_year' do
       { # example string as key, expected result as value
         '1496-1499' => 1496,
         '1496 - 1499' => 1496,
@@ -640,7 +640,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#hyphen_4digit_latest_year' do
+    describe '#hyphen_4digit_latest_year' do
       { # example string as key, expected result as value
         '1496-1499' => 1499,
         '1496 - 1499' => 1499,
@@ -658,7 +658,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#hyphen_2digit_latest_year' do
+    describe '#hyphen_2digit_latest_year' do
       { # example string as key, expected result as value
         '1757-58' => 1758,
         '1675-76?' => 1676,
@@ -677,7 +677,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#yyuu_after_hyphen' do
+    describe '#yyuu_after_hyphen' do
       {
         '17--?-18--?' => 1899,
         '17--? - 18--?' => 1899,
@@ -689,7 +689,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#first_four_digits' do
+    describe '#first_four_digits' do
       single_year
         .merge(specific_month)
         .merge(specific_day)
@@ -720,7 +720,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#year_from_mm_dd_yy' do
+    describe '#year_from_mm_dd_yy' do
       specific_day_2_digit_year.each do |example, expected|
         it "#{expected} for #{example}" do
           expect(ParseDate.send(:year_from_mm_dd_yy, example)).to eq expected
@@ -741,7 +741,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#first_year_for_decade' do
+    describe '#first_year_for_decade' do
       decade_only.each do |example, expected|
         it "#{expected.first} for #{example}" do
           expect(ParseDate.send(:first_year_for_decade, example)).to eq expected.first
@@ -766,7 +766,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#first_year_for_century' do
+    describe '#first_year_for_century' do
       century_only.each do |example|
         it "1700 from #{example}" do
           expect(ParseDate.send(:first_year_for_century, example)).to eq '1700'
@@ -780,7 +780,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#year_int_for_bc' do
+    describe '#year_int_for_bc' do
       bc_dates_to_int.each do |example, expected|
         it "#{expected} for #{example}" do
           expect(ParseDate.send(:year_int_for_bc, example)).to eq expected
@@ -788,7 +788,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#between_bc_earliest_year' do
+    describe '#between_bc_earliest_year' do
       { # example string as key, expected result as value
         'between 2000 and 1000 B.C' => -2000,
         'between 300 and 150 B.C' => -300,
@@ -806,7 +806,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#between_bc_latest_year' do
+    describe '#between_bc_latest_year' do
       { # example string as key, expected result as value
         'between 2000 and 1000 B.C' => -1000,
         'between 300 and 150 B.C' => -150,
@@ -824,7 +824,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#between_earliest_year' do
+    describe '#between_earliest_year' do
       { # example string as key, expected result as value
         'between 1000 and 2000' => 1000,
         'between 150 and 300' => 150,
@@ -838,7 +838,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    context '#between_latest_year' do
+    describe '#between_latest_year' do
       { # example string as key, expected result as value
         'between 1000 and 2000' => 2000,
         'between 150 and 300' => 300,
