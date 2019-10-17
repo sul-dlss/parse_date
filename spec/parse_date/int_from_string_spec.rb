@@ -421,6 +421,16 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
+    {
+      '17--?-18--?' => 1700,
+      '17--? - 18--?' => 1700,
+      '12--? -13--?' => 1200
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
+        expect(ParseDate.earliest_year(example)).to eq expected
+      end
+    end
+
     early_numeric_dates.each do |example, expected|
       it "#{example} for #{example}" do
         expect(ParseDate.earliest_year(example)).to eq expected
