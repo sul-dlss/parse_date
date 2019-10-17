@@ -56,6 +56,7 @@ class ParseDate
 
       result = ParseDate.send(:hyphen_4digit_latest_year, date_str)
       result ||= ParseDate.send(:hyphen_2digit_latest_year, date_str)
+      result ||= ParseDate.send(:yyuu_after_hyphen, date_str)
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
       result ||= ParseDate.send(:last_year_for_decade, date_str) # 19xx or 20xx
@@ -116,6 +117,16 @@ class ParseDate
       century = first[0, 2]
       last = "#{century}#{Regexp.last_match(:last)}"
       last.to_i if ParseDate.year_range_valid?(first.to_i, last.to_i)
+    end
+
+    YYUU = '\\d{1,2}[u\\-]{2}'
+    YYuu_HYPHEN_YYuu_REGEX = Regexp.new("(?<first>#{YYUU})\\??\\s*-\\s*(?<last>#{YYUU})\\??([^u\\-]|$)??", REGEX_OPTS)
+
+    # Integer value for latest year if we have "yyuu-yyuu" pattern
+    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    def yyuu_after_hyphen(date_str)
+      matches = date_str.match(YYuu_HYPHEN_YYuu_REGEX)
+      latest_year(Regexp.last_match(:last)) if matches
     end
 
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
