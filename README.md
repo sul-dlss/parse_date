@@ -60,6 +60,18 @@ ParseDate.latest_year('between 300 and 150 B.C.') # -150
 ParseDate.latest_year('1496-1499') # 1499
 ParseDate.latest_year('1750?-1867') # 1867
 
+ParseDate.year_range_valid?()
+ParseDate.year_range_valid?(1975, 1905) # false, first year > last year
+ParseDate.year_range_valid?(-100, -150) # false, first year > last year
+ParseDate.year_range_valid?(2050, 2070) # false, years later than current year + 2
+ParseDate.year_range_valid?(2007, 2050) # false, year later than current year + 2
+ParseDate.year_range_valid?(2007, 2009) # true
+ParseDate.year_range_valid?(75, 150) # true
+ParseDate.year_range_valid?(-3, 2) # true
+ParseDate.year_range_valid?(-100, -50) # true
+ParseDate.year_range_valid?(-1500, -1499) # true
+ParseDate.year_range_valid?(-15000, -14999) # true
+
 ParseDate.year_int_valid?(0) # true
 ParseDate.year_int_valid?(5) # true
 ParseDate.year_int_valid?(33) # true
