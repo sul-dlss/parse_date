@@ -95,14 +95,22 @@ class ParseDate
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def hyphen_4digit_earliest_year(date_str)
       matches = date_str.match(YYYY_HYPHEN_YYYY_REGEX)
-      Regexp.last_match(:first).to_i if matches && Regexp.last_match(:first).length == Regexp.last_match(:last).length
+      return unless matches
+
+      first = Regexp.last_match(:first).to_i
+      last = Regexp.last_match(:last).to_i
+      first if ParseDate.year_range_valid?(first, last)
     end
 
     # Integer value for latest year if we have "yyyy-yyyy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def hyphen_4digit_latest_year(date_str)
       matches = date_str.match(YYYY_HYPHEN_YYYY_REGEX)
-      Regexp.last_match(:last).to_i if matches && Regexp.last_match(:first).length == Regexp.last_match(:last).length
+      return unless matches
+
+      first = Regexp.last_match(:first).to_i
+      last = Regexp.last_match(:last).to_i
+      last if ParseDate.year_range_valid?(first, last)
     end
 
     YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{2})\??([^-0-9].*)?$/)
