@@ -487,6 +487,8 @@ RSpec.describe ParseDate::IntFromString do
       '1265-1371?' => 1371,
       'ca. 1400-1525' => 1525,
       'between 1750-1800?' => 1800,
+      '1757-58' => 1758,
+      '1675-76?' => 1676,
     }.each do |example, expected|
       it "#{expected} for #{example}" do
         expect(ParseDate.latest_year(example)).to eq expected
@@ -632,6 +634,25 @@ RSpec.describe ParseDate::IntFromString do
       }.each do |example, expected|
         it "#{expected} for #{example}" do
           expect(ParseDate.send(:hyphen_4digit_latest_year, example)).to eq expected
+        end
+      end
+    end
+
+    context '#hyphen_2digit_latest_year' do
+      { # example string as key, expected result as value
+        '1757-58' => 1758,
+        '1675-76?' => 1676,
+        '1675?-76' => 1676,
+        '1675?-76?' => 1676,
+        '1475 - 76' => 1476,
+        'ca. 1960-64' => 1964,
+        'between 1750-75?' => 1775,
+        '1496-1499' => nil, # doesn't match pattern
+        '1888-02-18' => nil, # doesn't match pattern
+        '1975-05' => nil, # matches pattern, but range invalid
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:hyphen_2digit_latest_year, example)).to eq expected
         end
       end
     end

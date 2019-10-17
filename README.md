@@ -59,6 +59,8 @@ ParseDate.latest_year('between 1 and 5') # 5
 ParseDate.latest_year('between 300 and 150 B.C.') # -150
 ParseDate.latest_year('1496-1499') # 1499
 ParseDate.latest_year('1750?-1867') # 1867
+ParseDate.latest_year('1757-58') # 1758
+ParseDate.latest_year('1975-05') # 1975 (range invalid)
 
 ParseDate.year_range_valid?()
 ParseDate.year_range_valid?(1975, 1905) # false, first year > last year
