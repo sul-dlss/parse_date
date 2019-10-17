@@ -409,6 +409,10 @@ RSpec.describe ParseDate::IntFromString do
       '1265-1371?' => 1265,
       'ca. 1400-1525' => 1400,
       'between 1750-1800?' => 1750,
+      '1835 or 1836' => 1835,
+      '17-- or 18--' => 1700,
+      '15-- or 16--?' => 1500,
+      '17th or 18th century?' => 1600,
     }.each do |example, expected|
       it "#{expected} for #{example}" do
         expect(ParseDate.earliest_year(example)).to eq expected
