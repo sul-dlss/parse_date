@@ -48,6 +48,8 @@ ParseDate.earliest_year('between 300 and 150 B.C.') # -300
 ParseDate.earliest_year('1496-1499') # 1496
 ParseDate.earliest_year('1750?-1867') # 1750
 ParseDate.earliest_year('17--?-18--?') # 1700
+ParseDate.earliest_year('1835 or 1836') # 1835
+ParseDate.earliest_year('17-- or 18--?') # 1700
 
 ParseDate.latest_year('195-') # 1959
 ParseDate.latest_year('199u') # 1999
@@ -63,6 +65,8 @@ ParseDate.latest_year('1750?-1867') # 1867
 ParseDate.latest_year('17--?-18--?') # 1899
 ParseDate.latest_year('1757-58') # 1758
 ParseDate.latest_year('1975-05') # 1975 (range invalid)
+ParseDate.latest_year('1835 or 1836') # 1836
+ParseDate.latest_year('17-- or 18--?') # 1899
 
 ParseDate.year_range_valid?()
 ParseDate.year_range_valid?(1975, 1905) # false, first year > last year
