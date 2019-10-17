@@ -134,7 +134,7 @@ class ParseDate
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def yyuu_after_hyphen(date_str)
       matches = date_str.match(YYuu_HYPHEN_YYuu_REGEX)
-      latest_year(Regexp.last_match(:last)) if matches
+      last_year_for_century(Regexp.last_match(:last)).to_i if matches
     end
 
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
