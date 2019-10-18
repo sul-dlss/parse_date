@@ -60,7 +60,7 @@ class ParseDate
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
       result ||= ParseDate.send(:last_year_for_decade, date_str) # 19xx or 20xx
-      # NOTE:  may want to parse for last occurence of consecutive digits
+      result ||= ParseDate.send(:latest_century, date_str)
       result ||= ParseDate.send(:last_year_for_century, date_str)
       result ||= ParseDate.send(:year_for_early_numeric, date_str)
       unless result
@@ -136,6 +136,19 @@ class ParseDate
       latest_year(Regexp.last_match(:last)).to_i if matches
     end
 
+    # NOTE: some actual data seemed to have a diff hyphen char. (slightly longer)
+    YY_YY_CENTURY_REGEX = Regexp.new(/(?<first>\d{1,2})[a-z]{2}?\s*(-|–|or)\s*(?<last>\d{1,2})[a-z]{2}?\s+centur.*/im)
+
+    # Integer value for latest year if we have nth-nth century pattern
+    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    def latest_century(date_str)
+      matches = date_str.match(YY_YY_CENTURY_REGEX)
+      return unless matches
+
+      nth = Regexp.last_match(:last).to_i
+      (nth - 1) * 100 + 99
+    end
+
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if date_str has yyyy, nil otherwise
     def first_four_digits(date_str)
@@ -192,7 +205,7 @@ class ParseDate
     def first_year_for_century(date_str)
       return if date_str =~ /B\.C\./
       return "#{Regexp.last_match(1)}00" if date_str.match(CENTURY_4CHAR_REGEX)
-      return "#{(Regexp.last_match(1).to_i - 1).to_s}00" if date_str.match(CENTURY_WORD_REGEX)
+      return "#{(Regexp.last_match(1).to_i - 1)}00" if date_str.match(CENTURY_WORD_REGEX)
     end
 
     # last year of century (as String) if we have:  yyuu, yy--, yy--? or xxth century pattern
@@ -203,7 +216,7 @@ class ParseDate
       return "#{Regexp.last_match(1)}99" if date_str.match(CENTURY_4CHAR_REGEX)
 
       # TODO:  do we want to look for the very last match of digits before "century" instead of the first one?
-      return "#{(Regexp.last_match(1).to_i - 1).to_s}99" if date_str.match(CENTURY_WORD_REGEX)
+      return "#{(Regexp.last_match(1).to_i - 1)}99" if date_str.match(CENTURY_WORD_REGEX)
     end
 
     BETWEEN_Yn_AND_Yn_REGEX = Regexp.new(/between\s+(?<first>\d{1,4})\??\s+and\s+(?<last>\d{1,4})\??/im)

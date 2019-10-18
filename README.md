@@ -50,6 +50,8 @@ ParseDate.earliest_year('1750?-1867') # 1750
 ParseDate.earliest_year('17--?-18--?') # 1700
 ParseDate.earliest_year('1835 or 1836') # 1835
 ParseDate.earliest_year('17-- or 18--?') # 1700
+ParseDate.earliest_year('17th or 18th century?') # 1600
+ParseDate.earliest_year('ca. 5th–6th century A.D.') # 400
 
 ParseDate.latest_year('195-') # 1959
 ParseDate.latest_year('199u') # 1999
@@ -67,6 +69,8 @@ ParseDate.latest_year('1757-58') # 1758
 ParseDate.latest_year('1975-05') # 1975 (range invalid)
 ParseDate.latest_year('1835 or 1836') # 1836
 ParseDate.latest_year('17-- or 18--?') # 1899
+ParseDate.earliest_year('17th or 18th century?') # 1799
+ParseDate.earliest_year('ca. 5th–6th century A.D.') # 599
 
 ParseDate.year_range_valid?()
 ParseDate.year_range_valid?(1975, 1905) # false, first year > last year
