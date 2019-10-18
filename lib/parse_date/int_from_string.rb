@@ -27,7 +27,7 @@ class ParseDate
       result ||= ParseDate.send(:between_earliest_year, date_str)
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
-      result ||= ParseDate.send(:first_year_for_decade, date_str) # 19xx or 20xx
+      result ||= ParseDate.send(:first_year_for_decade, date_str) # 198x or 201x
       result ||= ParseDate.send(:first_year_for_century, date_str) # includes BC
       result ||= ParseDate.send(:year_for_early_numeric, date_str)
       unless result
@@ -51,7 +51,7 @@ class ParseDate
       return if date_str == '0000-00-00' # shpc collection has these useless dates
 
       # B.C. first (match longest string first)
-      return ParseDate.send(:latest_century_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
+      return ParseDate.send(:last_year_mult_centuries_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
       return ParseDate.send(:between_bc_latest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
       return ParseDate.send(:last_year_for_bc_century, date_str) if date_str.match(BC_CENTURY_REGEX)
       return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(BC_REGEX)
@@ -63,8 +63,8 @@ class ParseDate
       result ||= ParseDate.send(:year_after_or, date_str)
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
-      result ||= ParseDate.send(:last_year_for_decade, date_str) # 19xx or 20xx
-      result ||= ParseDate.send(:latest_century, date_str) # nth-nth century
+      result ||= ParseDate.send(:last_year_for_decade, date_str) # 198x or 201x
+      result ||= ParseDate.send(:last_year_mult_centuries, date_str) # nth-nth century
       result ||= ParseDate.send(:last_year_for_century, date_str)
       result ||= ParseDate.send(:year_for_early_numeric, date_str)
       unless result
@@ -146,7 +146,7 @@ class ParseDate
 
     # Integer value for latest year if we have nth-nth century pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
-    def latest_century(date_str)
+    def last_year_mult_centuries(date_str)
       matches = date_str.match(YY_YY_CENTURY_REGEX)
       return unless matches
 
@@ -168,7 +168,7 @@ class ParseDate
 
     # Integer value for latest year if we have nth-nth century BC pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
-    def latest_century_bc(date_str)
+    def last_year_mult_centuries_bc(date_str)
       matches = date_str.match(YY_YY_CENTURY_BC_REGEX)
       return unless matches
 

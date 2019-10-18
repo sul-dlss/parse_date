@@ -722,24 +722,24 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    describe '#latest_century_bc' do
+    describe '#last_year_mult_centuries_bc' do
       {
         'ca. 9th–8th century B.C.' => -800,
         'ca. 13th–12th century B.C.' => -1200,
       }.each do |example, expected|
         it "#{expected} for #{example}" do
-          expect(ParseDate.send(:latest_century_bc, example)).to eq expected
+          expect(ParseDate.send(:last_year_mult_centuries_bc, example)).to eq expected
         end
       end
     end
 
-    describe '#latest_century' do
+    describe '#last_year_mult_centuries' do
       {
         '17th or 18th century?' => 1799,
         'ca. 5th-6th century A.D.' => 599,
       }.each do |example, expected|
         it "#{expected} for #{example}" do
-          expect(ParseDate.send(:latest_century, example)).to eq expected
+          expect(ParseDate.send(:last_year_mult_centuries, example)).to eq expected
         end
       end
     end
