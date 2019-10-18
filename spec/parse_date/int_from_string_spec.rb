@@ -414,7 +414,9 @@ RSpec.describe ParseDate::IntFromString do
       '15-- or 16--?' => 1500,
       '17th or 18th century?' => 1600,
       'ca. 5th–6th century A.D.' => 400,
-      # 'ca. 9th–8th century B.C.' => -999, # not yet implemented
+      'ca. 9th–8th century B.C.' => -999,
+      'ca. 13th–12th century B.C.' => -1399,
+      # '2nd millennium B.C. or ca. 8th century B.C.' => -899, # millennium not yet implemented
     }.each do |example, expected|
       it "#{expected} for #{example}" do
         expect(ParseDate.earliest_year(example)).to eq expected
@@ -510,8 +512,9 @@ RSpec.describe ParseDate::IntFromString do
       '15-- or 16--?' => 1699,
       '17th or 18th century?' => 1799,
       'ca. 5th–6th century A.D.' => 599,
-      # 'ca. 9th–8th century B.C.' => -800,
-      # '2nd millennium B.C. or ca. 8th century B.C.' => -800,
+      'ca. 9th–8th century B.C.' => -800,
+      'ca. 13th–12th century B.C.' => -1200,
+      # '2nd millennium B.C. or ca. 8th century B.C.' => -800, # millennium not yet implemented
     }.each do |example, expected|
       it "#{expected} for #{example}" do
         expect(ParseDate.latest_year(example)).to eq expected
@@ -684,12 +687,32 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
+    describe '#earliest_century_bc' do
+      {
+        'ca. 9th–8th century B.C.' => -999,
+        'ca. 13th–12th century B.C.' => -1399,
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:earliest_century_bc, example)).to eq expected
+        end
+      end
+    end
+
+    describe '#latest_century_bc' do
+      {
+        'ca. 9th–8th century B.C.' => -800,
+        'ca. 13th–12th century B.C.' => -1200,
+      }.each do |example, expected|
+        it "#{expected} for #{example}" do
+          expect(ParseDate.send(:latest_century_bc, example)).to eq expected
+        end
+      end
+    end
+
     describe '#latest_century' do
       {
         '17th or 18th century?' => 1799,
         'ca. 5th-6th century A.D.' => 599,
-        # 'ca. 9th–8th century B.C.' => -800,
-        # '2nd millennium B.C. or ca. 8th century B.C.' => -800,
       }.each do |example, expected|
         it "#{expected} for #{example}" do
           expect(ParseDate.send(:latest_century, example)).to eq expected
