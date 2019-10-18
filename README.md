@@ -54,6 +54,7 @@ ParseDate.earliest_year('17th or 18th century?') # 1600
 ParseDate.earliest_year('ca. 5th–6th century A.D.') # 400
 ParseDate.earliest_year('ca. 9th–8th century B.C.') # -999
 ParseDate.earliest_year('ca. 13th–12th century B.C.') # -1399
+ParseDate.earliest_year('5th century B.C.') # -599
 
 ParseDate.latest_year('195-') # 1959
 ParseDate.latest_year('199u') # 1999
@@ -75,6 +76,7 @@ ParseDate.latest_year('17th or 18th century?') # 1799
 ParseDate.latest_year('ca. 5th–6th century A.D.') # 599
 ParseDate.latest_year('ca. 9th–8th century B.C.') # -800
 ParseDate.latest_year('ca. 13th–12th century B.C.') # -1200
+ParseDate.latest_year('5th century B.C.') # -500
 
 ParseDate.year_range_valid?()
 ParseDate.year_range_valid?(1975, 1905) # false, first year > last year

@@ -430,6 +430,18 @@ RSpec.describe ParseDate::IntFromString do
     end
 
     {
+      '5th century' => 400,
+      '5th century B.C.' => -599,
+      '1st century A.D.' => 0,
+      '2th century CE' => 100,
+      '11th century?' => 1000,
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
+        expect(ParseDate.earliest_year(example)).to eq expected
+      end
+    end
+
+    {
       '17--?-18--?' => 1700,
       '17--? - 18--?' => 1700,
       '12--? -13--?' => 1200
@@ -552,6 +564,18 @@ RSpec.describe ParseDate::IntFromString do
     century_only.each do |example|
       it "1799 from #{example}" do
         expect(ParseDate.latest_year(example)).to eq 1799
+      end
+    end
+
+    {
+      '5th century' => 499,
+      '5th century B.C.' => -500,
+      '1st century A.D.' => 99,
+      '2th century CE' => 199,
+      '11th century?' => 1099,
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
+        expect(ParseDate.latest_year(example)).to eq expected
       end
     end
 
@@ -800,14 +824,14 @@ RSpec.describe ParseDate::IntFromString do
     describe '#first_year_for_century' do
       century_only.each do |example|
         it "1700 from #{example}" do
-          expect(ParseDate.send(:first_year_for_century, example)).to eq '1700'
+          expect(ParseDate.send(:first_year_for_century, example)).to eq 1700
         end
       end
       it '700 for 7--' do
-        expect(ParseDate.send(:first_year_for_century, '7--')).to eq '700'
+        expect(ParseDate.send(:first_year_for_century, '7--')).to eq 700
       end
-      it 'nil for 7th century B.C. (to be handled in different method)' do
-        expect(ParseDate.send(:first_year_for_century, '7th century B.C.')).to eq nil
+      it '7th century B.C.' do
+        expect(ParseDate.send(:first_year_for_century, '7th century B.C.')).to eq(-799)
       end
     end
 
