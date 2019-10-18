@@ -205,7 +205,7 @@ class ParseDate
     def first_year_for_century(date_str)
       return if date_str =~ /B\.C\./
       return "#{Regexp.last_match(1)}00" if date_str.match(CENTURY_4CHAR_REGEX)
-      return "#{(Regexp.last_match(1).to_i - 1).to_s}00" if date_str.match(CENTURY_WORD_REGEX)
+      return "#{(Regexp.last_match(1).to_i - 1)}00" if date_str.match(CENTURY_WORD_REGEX)
     end
 
     # last year of century (as String) if we have:  yyuu, yy--, yy--? or xxth century pattern
@@ -216,7 +216,7 @@ class ParseDate
       return "#{Regexp.last_match(1)}99" if date_str.match(CENTURY_4CHAR_REGEX)
 
       # TODO:  do we want to look for the very last match of digits before "century" instead of the first one?
-      return "#{(Regexp.last_match(1).to_i - 1).to_s}99" if date_str.match(CENTURY_WORD_REGEX)
+      return "#{(Regexp.last_match(1).to_i - 1)}99" if date_str.match(CENTURY_WORD_REGEX)
     end
 
     BETWEEN_Yn_AND_Yn_REGEX = Regexp.new(/between\s+(?<first>\d{1,4})\??\s+and\s+(?<last>\d{1,4})\??/im)
