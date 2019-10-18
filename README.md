@@ -78,7 +78,18 @@ ParseDate.latest_year('ca. 9th–8th century B.C.') # -800
 ParseDate.latest_year('ca. 13th–12th century B.C.') # -1200
 ParseDate.latest_year('5th century B.C.') # -500
 
-ParseDate.year_range_valid?()
+ParseDate.range_array('1993', '1995') # [1993, 1994, 1995]
+ParseDate.range_array(1993, 1995) # [1993, 1994, 1995]
+ParseDate.range_array(0, '0001') # [0, 1]
+ParseDate.range_array('-0003', '0000') # [-3, -2, -1, 0]
+ParseDate.range_array(-1, 1) # [-1, 0, 1]
+ParseDate.range_array(15, 15) # [15]
+ParseDate.range_array(-100, '-99') # [-100, -99]
+ParseDate.range_array('98', 101) # [98, 99, 100, 101]
+ParseDate.range_array('word1', 'word2') # throws ArgumentError
+ParseDate.range_array('1993', 1990) # throws StandardError - bad range
+ParseDate.range_array('12345', 12345) # throws StandardError - bad range
+
 ParseDate.year_range_valid?(1975, 1905) # false, first year > last year
 ParseDate.year_range_valid?(-100, -150) # false, first year > last year
 ParseDate.year_range_valid?(2050, 2070) # false, year later than current year + 1

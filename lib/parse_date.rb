@@ -49,4 +49,20 @@ class ParseDate
 
     true
   end
+
+  # @param [Integer, String] first_year, expecting integer or parseable string for .to_i
+  # @param [Integer, String] last_year, expecting integer or parseable string for .to_i
+  # @return [Array] array of Integer year values from first to last, inclusive
+  def self.range_array(first_year, last_year)
+    first_year = first_year.to_i if first_year.is_a?(String) && first_year.match?(/^-?\d+$/)
+    last_year = last_year.to_i if last_year.is_a?(String) && last_year.match?(/^-?\d+$/)
+
+    return [] unless last_year || first_year
+    return [first_year] if last_year.nil? && first_year
+    return [last_year] if first_year.nil? && last_year
+    raise(StandardError, "unable to create year range array from #{first_year}, #{last_year}") unless
+      year_range_valid?(first_year, last_year)
+
+    Range.new(first_year, last_year).to_a
+  end
 end
