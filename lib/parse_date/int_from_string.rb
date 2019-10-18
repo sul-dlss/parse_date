@@ -295,9 +295,9 @@ class ParseDate
     EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}$', REGEX_OPTS)
 
     # year if date_str contains yyy, yy, y, -y, -yy, -yyy, -yyyy
-    # @return [String, nil] year if date_str matches pattern; nil otherwise
+    # @return [Integer, nil] year if date_str matches pattern; nil otherwise
     def year_for_early_numeric(date_str)
-      date_str if date_str.match(EARLY_NUMERIC_REGEX) || date_str =~ /^-\d{4}$/
+      date_str.to_i if date_str.match(EARLY_NUMERIC_REGEX) || date_str =~ /^-\d{4}$/
     end
   end
 end
