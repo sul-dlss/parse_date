@@ -30,91 +30,127 @@ ParseDate has class methods for date string parsing.
 ```
 require 'parse_date'
 
-ParseDate.earliest_year('12/25/00') # 2000
-ParseDate.earliest_year('5-1-21') # 1921
-ParseDate.earliest_year('1666 B.C.') # -1666
-ParseDate.earliest_year('-914') # -914
-ParseDate.earliest_year('[c1926]') # 1926
-ParseDate.earliest_year('ca. 1558') # 1558
-ParseDate.earliest_year('195-') # 1950
-ParseDate.earliest_year('199u') # 1990
-ParseDate.earliest_year('197?') # 1970
-ParseDate.earliest_year('196x') # 1960
-ParseDate.earliest_year('18th century CE') # 1700
-ParseDate.earliest_year('17uu') # 1700
-ParseDate.earliest_year('between 1694 and 1799') # 1694
-ParseDate.earliest_year('between 1 and 5') # 1
-ParseDate.earliest_year('between 300 and 150 B.C.') # -300
-ParseDate.earliest_year('1496-1499') # 1496
-ParseDate.earliest_year('1750?-1867') # 1750
-ParseDate.earliest_year('17--?-18--?') # 1700
-ParseDate.earliest_year('1835 or 1836') # 1835
-ParseDate.earliest_year('17-- or 18--?') # 1700
-ParseDate.earliest_year('17th or 18th century?') # 1600
-ParseDate.earliest_year('ca. 5th–6th century A.D.') # 400
-ParseDate.earliest_year('ca. 9th–8th century B.C.') # -999
-ParseDate.earliest_year('ca. 13th–12th century B.C.') # -1399
-ParseDate.earliest_year('5th century B.C.') # -599
+ParseDate.parse_range('12/25/00')                       # [2000]
+ParseDate.parse_range('5-1-25')                         # [1925]
+ParseDate.parse_range('1666 B.C.')                      # [-1666]
+ParseDate.parse_range('-914')                           # [-914]
+ParseDate.parse_range('[c1926]')                        # [1926]
+ParseDate.parse_range('ca. 1558')                       # [1558]
+ParseDate.parse_range('195-')                           # (1950..1959).to_a
+ParseDate.parse_range('199u')                           # (1990..1999).to_a
+ParseDate.parse_range('197?')                           # (1970..1979).to_a
+ParseDate.parse_range('196x')                           # (1960..1969).to_a
+ParseDate.parse_range('18th century CE')                # (1700..1799).to_a
+ParseDate.parse_range('17uu')                           # (1700..1799).to_a
+ParseDate.parse_range('between 1694 and 1799')          # (1694..1799).to_a
+ParseDate.parse_range('between 1 and 5')                # (1..5).to_a
+ParseDate.parse_range('between 300 and 150 B.C.')       # (-300..-150).to_a
+ParseDate.parse_range('-5 - 3')                         # (-5..3).to_a
+ParseDate.parse_range('1496-1499')                      # (1496..1499).to_a
+ParseDate.parse_range('1750?-1867')                     # (1750..1867).to_a
+ParseDate.parse_range('17--?-18--?')                    # (1700..1899).to_a
+ParseDate.parse_range('1835 or 1836')                   # [1835, 1836]
+ParseDate.parse_range('17-- or 18--?')                  # (1700..1899).to_a
+ParseDate.parse_range('-2 or 1?')                       # (-2..1).to_a
+ParseDate.parse_range('17th or 18th century?')          # (1600..1799).to_a
+ParseDate.parse_range('ca. 5th–6th century A.D.')       # (400..599).to_a
+ParseDate.parse_range('ca. 9th–8th century B.C.')       # (-999..-800).to_a
+ParseDate.parse_range('ca. 13th–12th century B.C.')     # (-1399..-1200).to_a
+ParseDate.parse_range('5th century B.C.')               # (-599..-500).to_a
+ParseDate.parse_range('1975 - 1905')                    # last year > first year, raises error
+ParseDate.parse_range('-100 - -150')                    # last year > first year, raises error
+ParseDate.parse_range('1975 or 1905')                   # last year > first year, raises error
+ParseDate.parse_range('2050')                           # year later than current year + 1, raises error
+ParseDate.parse_range('12345')                          # year later than current year + 1, raises error
+ParseDate.parse_range('random text')                    # can't parse years, raises error
+ParseDate.parse_range(nil)                              # can't parse years, raises error
 
-ParseDate.latest_year('195-') # 1959
-ParseDate.latest_year('199u') # 1999
-ParseDate.latest_year('197?') # 1979
-ParseDate.latest_year('196x') # 1969
-ParseDate.latest_year('18th century CE') # 1799
-ParseDate.latest_year('17uu') # 1799
-ParseDate.latest_year('between 1694 and 1799') # 1799
-ParseDate.latest_year('between 1 and 5') # 5
-ParseDate.latest_year('between 300 and 150 B.C.') # -150
-ParseDate.latest_year('1496-1499') # 1499
-ParseDate.latest_year('1750?-1867') # 1867
-ParseDate.latest_year('17--?-18--?') # 1899
-ParseDate.latest_year('1757-58') # 1758
-ParseDate.latest_year('1975-05') # 1975 (range invalid)
-ParseDate.latest_year('1835 or 1836') # 1836
-ParseDate.latest_year('17-- or 18--?') # 1899
-ParseDate.latest_year('17th or 18th century?') # 1799
-ParseDate.latest_year('ca. 5th–6th century A.D.') # 599
-ParseDate.latest_year('ca. 9th–8th century B.C.') # -800
-ParseDate.latest_year('ca. 13th–12th century B.C.') # -1200
-ParseDate.latest_year('5th century B.C.') # -500
+ParseDate.earliest_year('12/25/00')                     # 2000
+ParseDate.earliest_year('5-1-21')                       # 1921
+ParseDate.earliest_year('1666 B.C.')                    # -1666
+ParseDate.earliest_year('-914')                         # -914
+ParseDate.earliest_year('[c1926]')                      # 1926
+ParseDate.earliest_year('ca. 1558')                     # 1558
+ParseDate.earliest_year('195-')                         # 1950
+ParseDate.earliest_year('199u')                         # 1990
+ParseDate.earliest_year('197?')                         # 1970
+ParseDate.earliest_year('196x')                         # 1960
+ParseDate.earliest_year('18th century CE')              # 1700
+ParseDate.earliest_year('17uu')                         # 1700
+ParseDate.earliest_year('between 1694 and 1799')        # 1694
+ParseDate.earliest_year('between 1 and 5')              # 1
+ParseDate.earliest_year('between 300 and 150 B.C.')     # -300
+ParseDate.earliest_year('1496-1499')                    # 1496
+ParseDate.earliest_year('1750?-1867')                   # 1750
+ParseDate.earliest_year('17--?-18--?')                  # 1700
+ParseDate.earliest_year('1835 or 1836')                 # 1835
+ParseDate.earliest_year('17-- or 18--?')                # 1700
+ParseDate.earliest_year('17th or 18th century?')        # 1600
+ParseDate.earliest_year('ca. 5th–6th century A.D.')     # 400
+ParseDate.earliest_year('ca. 9th–8th century B.C.')     # -999
+ParseDate.earliest_year('ca. 13th–12th century B.C.')   # -1399
+ParseDate.earliest_year('5th century B.C.')             # -599
 
-ParseDate.range_array('1993', '1995') # [1993, 1994, 1995]
-ParseDate.range_array(1993, 1995) # [1993, 1994, 1995]
-ParseDate.range_array(0, '0001') # [0, 1]
-ParseDate.range_array('-0003', '0000') # [-3, -2, -1, 0]
-ParseDate.range_array(-1, 1) # [-1, 0, 1]
-ParseDate.range_array(15, 15) # [15]
-ParseDate.range_array(-100, '-99') # [-100, -99]
-ParseDate.range_array('98', 101) # [98, 99, 100, 101]
-ParseDate.range_array('word1', 'word2') # throws ArgumentError
-ParseDate.range_array('1993', 1990) # throws StandardError - bad range
-ParseDate.range_array('12345', 12345) # throws StandardError - bad range
+ParseDate.latest_year('195-')                           # 1959
+ParseDate.latest_year('199u')                           # 1999
+ParseDate.latest_year('197?')                           # 1979
+ParseDate.latest_year('196x')                           # 1969
+ParseDate.latest_year('18th century CE')                # 1799
+ParseDate.latest_year('17uu')                           # 1799
+ParseDate.latest_year('between 1694 and 1799')          # 1799
+ParseDate.latest_year('between 1 and 5')                # 5
+ParseDate.latest_year('between 300 and 150 B.C.')       # -150
+ParseDate.latest_year('1496-1499')                      # 1499
+ParseDate.latest_year('1750?-1867')                     # 1867
+ParseDate.latest_year('17--?-18--?')                    # 1899
+ParseDate.latest_year('1757-58')                        # 1758
+ParseDate.latest_year('1975-05')                        # 1975 (range invalid)
+ParseDate.latest_year('1835 or 1836')                   # 1836
+ParseDate.latest_year('17-- or 18--?')                  # 1899
+ParseDate.latest_year('17th or 18th century?')          # 1799
+ParseDate.latest_year('ca. 5th–6th century A.D.')       # 599
+ParseDate.latest_year('ca. 9th–8th century B.C.')       # -800
+ParseDate.latest_year('ca. 13th–12th century B.C.')     # -1200
+ParseDate.latest_year('5th century B.C.')               # -500
+ParseDate.latest_year('-5 - 3')                         # 3,
 
-ParseDate.year_range_valid?(1975, 1905) # false, first year > last year
-ParseDate.year_range_valid?(-100, -150) # false, first year > last year
-ParseDate.year_range_valid?(2050, 2070) # false, year later than current year + 1
-ParseDate.year_range_valid?(2007, 2050) # false, year later than current year + 1
-ParseDate.year_range_valid?(2007, 2009) # true
-ParseDate.year_range_valid?(75, 150) # true
-ParseDate.year_range_valid?(-3, 2) # true
-ParseDate.year_range_valid?(-100, -50) # true
-ParseDate.year_range_valid?(-1500, -1499) # true
-ParseDate.year_range_valid?(-15000, -14999) # true
+ParseDate.range_array('1993', '1995')                   # [1993, 1994, 1995]
+ParseDate.range_array(1993, 1995)                       # [1993, 1994, 1995]
+ParseDate.range_array(0, '0001')                        # [0, 1]
+ParseDate.range_array('-0003', '0000')                  # [-3, -2, -1, 0]
+ParseDate.range_array(-1, 1)                            # [-1, 0, 1]
+ParseDate.range_array(15, 15)                           # [15]
+ParseDate.range_array(-100, '-99')                      # [-100, -99]
+ParseDate.range_array('98', 101)                        # [98, 99, 100, 101]
+ParseDate.range_array('word1', 'word2')                 # throws ArgumentError
+ParseDate.range_array('1993', 1990)                     # throws StandardError - bad range
+ParseDate.range_array('12345', 12345)                   # throws StandardError - bad range
 
-ParseDate.year_int_valid?(0) # true
-ParseDate.year_int_valid?(5) # true
-ParseDate.year_int_valid?(33) # true
-ParseDate.year_int_valid?(150) # true
-ParseDate.year_int_valid?(2019) # true
-ParseDate.year_int_valid?(Date.today.year + 1) # true
-ParseDate.year_int_valid?(-3) # true
-ParseDate.year_int_valid?(-35) # true
-ParseDate.year_int_valid?(-999) # true
-ParseDate.year_int_valid?(-1666) # false - four digit negative years not considered valid here
-ParseDate.year_int_valid?(165x) # false
-ParseDate.year_int_valid?(198-) # false
-ParseDate.year_int_valid?('random text') # false
-ParseDate.year_int_valid?(nil) # false
+ParseDate.year_range_valid?(1975, 1905)                 # false, first year > last year
+ParseDate.year_range_valid?(-100, -150)                 # false, first year > last year
+ParseDate.year_range_valid?(2050, 2070)                 # false, year later than current year + 1
+ParseDate.year_range_valid?(2007, 2050)                 # false, year later than current year + 1
+ParseDate.year_range_valid?(2007, 2009)                 # true
+ParseDate.year_range_valid?(75, 150)                    # true
+ParseDate.year_range_valid?(-3, 2)                      # true
+ParseDate.year_range_valid?(-100, -50)                  # true
+ParseDate.year_range_valid?(-1500, -1499)               # true
+ParseDate.year_range_valid?(-15000, -14999)             # true
+
+ParseDate.year_int_valid?(0)                            # true
+ParseDate.year_int_valid?(5)                            # true
+ParseDate.year_int_valid?(33)                           # true
+ParseDate.year_int_valid?(150)                          # true
+ParseDate.year_int_valid?(2019)                         # true
+ParseDate.year_int_valid?(Date.today.year + 1)          # true
+ParseDate.year_int_valid?(-3)                           # true
+ParseDate.year_int_valid?(-35)                          # true
+ParseDate.year_int_valid?(-999)                         # true
+ParseDate.year_int_valid?(-1666)                        # false - four digit negative years not considered valid here
+ParseDate.year_int_valid?(165x)                         # false
+ParseDate.year_int_valid?(198-)                         # false
+ParseDate.year_int_valid?('random text')                # false
+ParseDate.year_int_valid?(nil)                          # false
 ```
 
 ## Development

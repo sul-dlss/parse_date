@@ -5,6 +5,79 @@ RSpec.describe ParseDate do
     expect(ParseDate::VERSION).not_to be nil
   end
 
+  describe '.parse_range' do
+    context 'when input is parseable' do
+      # single value
+      { # string to parse as key, expected result as value
+        '12/25/00' => [2000],
+        '5-1-25' => [1925],
+        '1666 B.C.' => [-1666],
+        '-914' => [-914],
+        '[c1926]' => [1926],
+        'ca. 1558' => [1558],
+      }.each do |example, expected|
+        it "array of single value #{expected} for '#{example}'" do
+          expect(ParseDate.parse_range(example)).to eq expected
+        end
+      end
+
+      # multiple values
+      { # string to parse as key, expected result as value
+        '195-' => (1950..1959).to_a,
+        '199u' => (1990..1999).to_a,
+        '197?' => (1970..1979).to_a,
+        '196x' => (1960..1969).to_a,
+        '18th century CE' => (1700..1799).to_a,
+        '17uu' => (1700..1799).to_a,
+        'between 1694 and 1799' => (1694..1799).to_a,
+        'between 1 and 5' => (1..5).to_a,
+        'between 300 and 150 B.C.' => (-300..-150).to_a,
+        '-5 - 3' => (-5..3).to_a,
+        '1496-1499' => (1496..1499).to_a,
+        '1750?-1867' => (1750..1867).to_a,
+        '17--?-18--?' => (1700..1899).to_a,
+        '1835 or 1836' => [1835, 1836].to_a,
+        '17-- or 18--?' => (1700..1899).to_a,
+        '-2 or 1?' => (-2..1).to_a,
+        '17th or 18th century?' => (1600..1799).to_a,
+        'ca. 5th–6th century A.D.' => (400..599).to_a,
+        'ca. 9th–8th century B.C.' => (-999..-800).to_a,
+        'ca. 13th–12th century B.C.' => (-1399..-1200).to_a,
+        '5th century B.C.' => (-599..-500).to_a,
+      }.each do |example, expected|
+        it "#{example} returns array from earliest (#{expected.first}) to latest (#{expected.last})" do
+          expect(ParseDate.parse_range(example)).to eq expected
+        end
+      end
+
+      context 'when year is invalid' do
+        [
+          '1975 or 1905', # last year > first year
+          '-100 - -150', # last year > first year
+          '1975 - 1905', # last year > first year
+          '2050', # year later than current year + 1
+          '12345', # year later than current year + 1
+        ].each do |example|
+          it "raises error: '#{example}'" do
+            exp_msg_regex = /Unable to parse range from '#{example}'/
+            expect { ParseDate.parse_range(example) }.to raise_error(ParseDate::Error, exp_msg_regex)
+          end
+        end
+      end
+    end
+    context 'when years cannot be parsed' do
+      [
+        'random text',
+        nil,
+      ].each do |example|
+        it "raises error: '#{example}'" do
+          exp_msg_regex = /Unable to parse range from '#{example}'/
+          expect { ParseDate.parse_range(example) }.to raise_error(ParseDate::Error, exp_msg_regex)
+        end
+      end
+    end
+  end
+
   describe '.year_range_valid?' do
     { # [first, last] as key, expected result as value
       [1975, 1905] => false,

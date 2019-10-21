@@ -66,7 +66,7 @@ class ParseDate
       result ||= ParseDate.send(:last_year_for_decade, date_str) # 198x or 201x
       result ||= ParseDate.send(:last_year_mult_centuries, date_str) # nth-nth century
       result ||= ParseDate.send(:last_year_for_century, date_str)
-      result ||= ParseDate.send(:year_for_early_numeric, date_str)
+      result ||= ParseDate.send(:last_year_for_early_numeric, date_str)
       unless result
         # try removing brackets between digits in case we have 169[5] or [18]91
         no_brackets = ParseDate.send(:remove_brackets, date_str)
@@ -94,17 +94,12 @@ class ParseDate
       date_str.delete('[]') if date_str.match(BRACKETS_BETWEEN_DIGITS_REGEX)
     end
 
-    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{1,4})\??/m)
+    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{4})\??/m)
 
     # Integer value for latest year if we have "yyyy-yyyy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def hyphen_4digit_latest_year(date_str)
-      matches = date_str.match(YYYY_HYPHEN_YYYY_REGEX)
-      return unless matches
-
-      first = Regexp.last_match(:first).to_i
-      last = Regexp.last_match(:last).to_i
-      last if ParseDate.year_range_valid?(first, last)
+      Regexp.last_match(:last).to_i if date_str.match(YYYY_HYPHEN_YYYY_REGEX)
     end
 
     YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{2})\??([^-0-9].*)?$/)
@@ -284,12 +279,23 @@ class ParseDate
       "-#{Regexp.last_match(:last)}".to_i if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
     end
 
-    EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}$', REGEX_OPTS)
+    EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}([^\du\-\[]|$)', REGEX_OPTS)
 
     # year if date_str contains yyy, yy, y, -y, -yy, -yyy, -yyyy
     # @return [Integer, nil] year if date_str matches pattern; nil otherwise
     def year_for_early_numeric(date_str)
-      date_str.to_i if date_str.match(EARLY_NUMERIC_REGEX) || date_str =~ /^-\d{4}$/
+      date_str.to_i if date_str.match(EARLY_NUMERIC_REGEX) || date_str =~ /^-\d{4}([^\du\-\[]|$)$/
+    end
+
+    FIRST_LAST_EARLY_NUMERIC_REGEX =
+      Regexp.new(/^(?<first>\-?\d{1,3})\??\s*(-|–|or)\s*(?<last>\-?\d{1,4})\??([^\du\-\[]|$)/im)
+
+    # Integer value for latest year if we have early numeric year range or single early numeric year
+    # @return [Integer, nil] year if date_str matches pattern; nil otherwise
+    def last_year_for_early_numeric(date_str)
+      return Regexp.last_match(:last).to_i if date_str.match(FIRST_LAST_EARLY_NUMERIC_REGEX)
+
+      year_for_early_numeric(date_str) # if single year, not matched above
     end
   end
 end
