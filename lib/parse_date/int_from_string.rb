@@ -127,8 +127,7 @@ class ParseDate
     # Integer value for latest year if we have "yyuu-yyuu" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def yyuu_after_hyphen(date_str)
-      matches = date_str.match(YYuu_HYPHEN_YYuu_REGEX)
-      last_year_for_century(Regexp.last_match(:last)).to_i if matches
+      last_year_for_century(Regexp.last_match(:last)).to_i if date_str.match(YYuu_HYPHEN_YYuu_REGEX)
     end
 
     YYXX = '\\d{1,2}[u\\-\\d]{2}'
@@ -137,8 +136,7 @@ class ParseDate
     # Integer value for latest year if we have "yyyy or yyyy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def year_after_or(date_str)
-      matches = date_str.match(YExx_OR_YExx_REGEX)
-      latest_year(Regexp.last_match(:last)).to_i if matches
+      latest_year(Regexp.last_match(:last)).to_i if date_str.match(YExx_OR_YExx_REGEX)
     end
 
     # NOTE: some actual data seemed to have a diff hyphen char. (slightly longer)
@@ -179,8 +177,7 @@ class ParseDate
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if date_str has yyyy, nil otherwise
     def first_four_digits(date_str)
-      matches = date_str.match(/\d{4}/)
-      matches&.to_s
+      Regexp.last_match(1) if date_str.match(/(\d{4})([^\d]|$)/im)
     end
 
     # returns 4 digit year as String if we have a x/x/yy or x-x-yy pattern
@@ -255,16 +252,14 @@ class ParseDate
     # NOTE: must match for BC first with between_bc_earliest_year
     # @return [Integer, nil] year if date_str matches pattern; nil otherwise
     def between_earliest_year(date_str)
-      matches = date_str.match(BETWEEN_Yn_AND_Yn_REGEX)
-      Regexp.last_match(:first).to_i if matches
+      Regexp.last_match(:first).to_i if date_str.match(BETWEEN_Yn_AND_Yn_REGEX)
     end
 
     # Integer value for latest year if we have "between y and y" pattern
     # NOTE: must match for BC first with between_bc_latest_year
     # @return [Integer, nil] year if date_str matches pattern; nil otherwise
     def between_latest_year(date_str)
-      matches = date_str.match(BETWEEN_Yn_AND_Yn_REGEX)
-      Regexp.last_match(:last).to_i if matches
+      Regexp.last_match(:last).to_i if date_str.match(BETWEEN_Yn_AND_Yn_REGEX)
     end
 
     YEAR_BC_REGEX = Regexp.new("(\\d{1,4})#{BC_REGEX}", REGEX_OPTS)
@@ -272,8 +267,7 @@ class ParseDate
     # Integer value for B.C. if we have B.C. pattern
     # @return [Integer, nil] -ddd if B.C. in pattern; nil otherwise
     def year_int_for_bc(date_str)
-      bc_matches = date_str.match(YEAR_BC_REGEX)
-      "-#{Regexp.last_match(1)}".to_i if bc_matches
+      "-#{Regexp.last_match(1)}".to_i if date_str.match(YEAR_BC_REGEX)
     end
 
     BETWEEN_Yn_AND_Yn_BC_REGEX = Regexp.new("#{BETWEEN_Yn_AND_Yn_REGEX}#{BC_REGEX}", REGEX_OPTS)
@@ -281,15 +275,13 @@ class ParseDate
     # Integer value for earliest year if we have "between y and y B.C." pattern
     # @return [Integer, nil] -ddd if date_str matches pattern; nil otherwise
     def between_bc_earliest_year(date_str)
-      matches = date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
-      "-#{Regexp.last_match(:first)}".to_i if matches
+      "-#{Regexp.last_match(:first)}".to_i if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
     end
 
     # Integer value for latest year if we have "between y and y B.C." pattern
     # @return [Integer, nil] -ddd if date_str matches pattern; nil otherwise
     def between_bc_latest_year(date_str)
-      matches = date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
-      "-#{Regexp.last_match(:last)}".to_i if matches
+      "-#{Regexp.last_match(:last)}".to_i if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
     end
 
     EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}$', REGEX_OPTS)
