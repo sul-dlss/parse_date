@@ -172,7 +172,7 @@ class ParseDate
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if date_str has yyyy, nil otherwise
     def first_four_digits(date_str)
-      Regexp.last_match(1) if date_str.match(/(\d{4})([^\d]|$)/im)
+      Regexp.last_match(1) if date_str.match(/(\d{4})/)
     end
 
     # returns 4 digit year as String if we have a x/x/yy or x-x-yy pattern

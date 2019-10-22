@@ -393,6 +393,10 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
+    it '1999 for 19990211' do
+      expect(ParseDate.earliest_year('19990211')).to eq 1999
+    end
+
     multiple_years
       .merge(multiple_years_4_digits_once)
       .merge(decade_only)
@@ -508,6 +512,10 @@ RSpec.describe ParseDate::IntFromString do
       it "#{expected} for single value #{example}" do
         expect(ParseDate.latest_year(example)).to eq expected.to_i
       end
+    end
+
+    it '2000 for 20000222' do
+      expect(ParseDate.latest_year('20000222')).to eq 2000
     end
 
     { # example string as key, expected result as value
