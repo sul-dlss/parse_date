@@ -56,7 +56,6 @@ RSpec.describe ParseDate do
           '-100 - -150', # last year > first year
           '1975 - 1905', # last year > first year
           '2050', # year later than current year + 1
-          '12345', # year later than current year + 1
         ].each do |example|
           it "raises error: '#{example}'" do
             exp_msg_regex = /Unable to parse range from '#{example}'/
@@ -124,7 +123,6 @@ RSpec.describe ParseDate do
         ['1993', '1992'],
         [1993, 1992],
         ['-99', -100],
-        ['12345', 12345]
       ].each do |example|
         first_year = example[0]
         last_year = example[1]

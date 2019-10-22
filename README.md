@@ -61,12 +61,12 @@ ParseDate.parse_range('1975 - 1905')                    # last year > first year
 ParseDate.parse_range('-100 - -150')                    # last year > first year, raises error
 ParseDate.parse_range('1975 or 1905')                   # last year > first year, raises error
 ParseDate.parse_range('2050')                           # year later than current year + 1, raises error
-ParseDate.parse_range('12345')                          # year later than current year + 1, raises error
 ParseDate.parse_range('random text')                    # can't parse years, raises error
 ParseDate.parse_range(nil)                              # can't parse years, raises error
 
 ParseDate.earliest_year('12/25/00')                     # 2000
 ParseDate.earliest_year('5-1-21')                       # 1921
+ParseDate.earliest_year('19990211')                     # 1999
 ParseDate.earliest_year('1666 B.C.')                    # -1666
 ParseDate.earliest_year('-914')                         # -914
 ParseDate.earliest_year('[c1926]')                      # 1926
@@ -91,6 +91,7 @@ ParseDate.earliest_year('ca. 9th–8th century B.C.')     # -999
 ParseDate.earliest_year('ca. 13th–12th century B.C.')   # -1399
 ParseDate.earliest_year('5th century B.C.')             # -599
 
+ParseDate.latest_year('20000222')                       # 2000
 ParseDate.latest_year('195-')                           # 1959
 ParseDate.latest_year('199u')                           # 1999
 ParseDate.latest_year('197?')                           # 1979
@@ -124,7 +125,6 @@ ParseDate.range_array(-100, '-99')                      # [-100, -99]
 ParseDate.range_array('98', 101)                        # [98, 99, 100, 101]
 ParseDate.range_array('word1', 'word2')                 # throws ArgumentError
 ParseDate.range_array('1993', 1990)                     # throws StandardError - bad range
-ParseDate.range_array('12345', 12345)                   # throws StandardError - bad range
 
 ParseDate.year_range_valid?(1975, 1905)                 # false, first year > last year
 ParseDate.year_range_valid?(-100, -150)                 # false, first year > last year
