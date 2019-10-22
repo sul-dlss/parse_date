@@ -38,6 +38,17 @@ class ParseDate
     ParseDate::IntFromString.year_int_valid?(date_str)
   end
 
+  # @return [Array] array of Integer year values from earliest year to latest year, inclusive
+  def self.parse_range(date_str)
+    first = earliest_year(date_str)
+    last = latest_year(date_str)
+    raise ParseDate::Error, "Unable to parse range from '#{date_str}'" unless year_range_valid?(first, last)
+
+    range_array(first, last)
+  rescue StandardError => e
+    raise ParseDate::Error, "Unable to parse range from '#{date_str}': #{e.message}"
+  end
+
   # true if:
   #   both years are not newer than (current year + 1)
   #   first_year <= last_year
