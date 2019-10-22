@@ -138,7 +138,7 @@ class ParseDate
     YY_YY_CENTURY_REGEX = Regexp.new(/(?<first>\d{1,2})[a-z]{2}?\s*(-|–|or)\s*(?<last>\d{1,2})[a-z]{2}?\s+centur.*/im)
 
     # Integer value for latest year if we have nth-nth century pattern
-    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    # @return [Integer, nil] yy99 if date_str matches pattern; nil otherwise
     def last_year_mult_centuries(date_str)
       matches = date_str.match(YY_YY_CENTURY_REGEX)
       return unless matches
@@ -150,7 +150,7 @@ class ParseDate
     YY_YY_CENTURY_BC_REGEX = Regexp.new("#{YY_YY_CENTURY_REGEX}#{BC_REGEX}", REGEX_OPTS)
 
     # Integer value for earliest year if we have nth-nth century BC pattern
-    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    # @return [Integer, nil] -yy99 if date_str matches pattern; nil otherwise
     def earliest_century_bc(date_str)
       matches = date_str.match(YY_YY_CENTURY_BC_REGEX)
       return unless matches
@@ -160,7 +160,7 @@ class ParseDate
     end
 
     # Integer value for latest year if we have nth-nth century BC pattern
-    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    # @return [Integer, nil] -yy00 if date_str matches pattern; nil otherwise
     def last_year_mult_centuries_bc(date_str)
       matches = date_str.match(YY_YY_CENTURY_BC_REGEX)
       return unless matches
@@ -236,7 +236,7 @@ class ParseDate
     end
 
     # last year of century (as String) if we have:  nth century BC
-    # @return [Integer, nil] yy99 if date_str matches pattern, nil otherwise; also nil if B.C. in pattern
+    # @return [Integer, nil] -yy00 if date_str matches pattern, nil otherwise; also nil if B.C. in pattern
     def last_year_for_bc_century(date_str)
       Regexp.last_match(1).to_i * -100 if date_str.match(BC_CENTURY_REGEX)
     end
