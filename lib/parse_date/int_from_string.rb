@@ -25,6 +25,7 @@ class ParseDate
       return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
 
       result ||= ParseDate.send(:between_earliest_year, date_str)
+      result ||= ParseDate.send(:negative_first_four_digits, date_str)
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
       result ||= ParseDate.send(:first_year_for_decade, date_str) # 198x or 201x
@@ -61,6 +62,7 @@ class ParseDate
       result ||= ParseDate.send(:hyphen_2digit_latest_year, date_str)
       result ||= ParseDate.send(:yyuu_after_hyphen, date_str)
       result ||= ParseDate.send(:year_after_or, date_str)
+      result ||= ParseDate.send(:negative_4digits_after_hyphen, date_str)
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
       result ||= ParseDate.send(:last_year_for_decade, date_str) # 198x or 201x
@@ -75,12 +77,12 @@ class ParseDate
       result.to_i if result && year_int_valid?(result.to_i)
     end
 
-    # true if the year is between -999 and (current year + 1), inclusive
+    # true if the year is between -9999 and (current year + 1), inclusive
     # @return [Boolean] true if the year is between -999 and (current year + 1); false otherwise
     def self.year_int_valid?(year)
       return false unless year.is_a? Integer
 
-      (-1000 < year.to_i) && (year < Date.today.year + 2)
+      (-10000 < year.to_i) && (year < Date.today.year + 2)
     end
 
     protected
@@ -169,6 +171,18 @@ class ParseDate
       nth * -100
     end
 
+    # looks for -yyyy at beginning of date_str and returns if found
+    # @return [String, nil] negative 4 digit year (e.g. -1865) if date_str has -yyyy, nil otherwise
+    def negative_first_four_digits(date_str)
+      Regexp.last_match(1) if date_str.match(/^(\-\d{4})/)
+    end
+
+    # looks for -yyyy after hyphen and returns if found
+    # @return [String, nil] negative 4 digit year (e.g. -1865) if date_str has -yyyy - -yyyy, nil otherwise
+    def negative_4digits_after_hyphen(date_str)
+      Regexp.last_match(1) if date_str.match(/\-\d{4}\s*\-\s*(\-\d{4})/)
+    end
+
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if date_str has yyyy, nil otherwise
     def first_four_digits(date_str)
@@ -195,7 +209,7 @@ class ParseDate
       nil # explicitly want nil if date won't parse
     end
 
-    DECADE_4CHAR_REGEX = Regexp.new('(^|\D)\d{3}[u\-?x]', REGEX_OPTS)
+    DECADE_4CHAR_REGEX = Regexp.new('(^|\D)\d{3}[u\-?x]($|\D)', REGEX_OPTS)
 
     # first year of decade (as String) if we have:  yyyu, yyy-, yyy? or yyyx pattern
     #   note that these are the only decade patterns found in our actual date strings in MODS records
@@ -279,7 +293,7 @@ class ParseDate
       "-#{Regexp.last_match(:last)}".to_i if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
     end
 
-    EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}([^\du\-\[]|$)', REGEX_OPTS)
+    EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}([^\du\[]|$)', REGEX_OPTS)
 
     # year if date_str contains yyy, yy, y, -y, -yy, -yyy, -yyyy
     # @return [Integer, nil] year if date_str matches pattern; nil otherwise

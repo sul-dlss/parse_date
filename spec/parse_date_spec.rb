@@ -44,6 +44,8 @@ RSpec.describe ParseDate do
         'ca. 9th–8th century B.C.' => (-999..-800).to_a,
         'ca. 13th–12th century B.C.' => (-1399..-1200).to_a,
         '5th century B.C.' => (-599..-500).to_a,
+        '502-504' => [502, 503, 504],
+        '-2100 - -2000' => (-2100..-2000).to_a,
       }.each do |example, expected|
         it "#{example} returns array from earliest (#{expected.first}) to latest (#{expected.last})" do
           expect(ParseDate.parse_range(example)).to eq expected
