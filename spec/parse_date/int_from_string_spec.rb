@@ -644,7 +644,7 @@ RSpec.describe ParseDate::IntFromString do
 
   describe '.year_int_valid?' do
     { # example int as key, expected result as value
-      -1666 => false,
+      -1666 => true,
       -999 => true,
       -35 => true,
       -3 => true,
