@@ -57,6 +57,8 @@ ParseDate.parse_range('ca. 5th–6th century A.D.')       # (400..599).to_a
 ParseDate.parse_range('ca. 9th–8th century B.C.')       # (-999..-800).to_a
 ParseDate.parse_range('ca. 13th–12th century B.C.')     # (-1399..-1200).to_a
 ParseDate.parse_range('5th century B.C.')               # (-599..-500).to_a
+ParseDate.parse_range('502-504')                        # [502, 503, 504]
+ParseDate.parse_range('-2100 - -2000')                  # (-2100..-2000).to_a
 ParseDate.parse_range('1975 - 1905')                    # last year > first year, raises error
 ParseDate.parse_range('-100 - -150')                    # last year > first year, raises error
 ParseDate.parse_range('1975 or 1905')                   # last year > first year, raises error
@@ -90,6 +92,8 @@ ParseDate.earliest_year('ca. 5th–6th century A.D.')     # 400
 ParseDate.earliest_year('ca. 9th–8th century B.C.')     # -999
 ParseDate.earliest_year('ca. 13th–12th century B.C.')   # -1399
 ParseDate.earliest_year('5th century B.C.')             # -599
+ParseDate.earliest_year('502-504')                      # 502
+ParseDate.earliest_year('-2100 - -2000')                # -2100
 
 ParseDate.latest_year('20000222')                       # 2000
 ParseDate.latest_year('195-')                           # 1959
@@ -113,7 +117,9 @@ ParseDate.latest_year('ca. 5th–6th century A.D.')       # 599
 ParseDate.latest_year('ca. 9th–8th century B.C.')       # -800
 ParseDate.latest_year('ca. 13th–12th century B.C.')     # -1200
 ParseDate.latest_year('5th century B.C.')               # -500
-ParseDate.latest_year('-5 - 3')                         # 3,
+ParseDate.latest_year('-5 - 3')                         # 3
+ParseDate.latest_year('502-504')                        # 504
+ParseDate.latest_year('-2100 - -2000')                  # -2000
 
 ParseDate.range_array('1993', '1995')                   # [1993, 1994, 1995]
 ParseDate.range_array(1993, 1995)                       # [1993, 1994, 1995]
