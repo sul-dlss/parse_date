@@ -195,7 +195,7 @@ class ParseDate
       nil # explicitly want nil if date won't parse
     end
 
-    DECADE_4CHAR_REGEX = Regexp.new('(^|\D)\d{3}[u\-?x]', REGEX_OPTS)
+    DECADE_4CHAR_REGEX = Regexp.new('(^|\D)\d{3}[u\-?x]($|\D)', REGEX_OPTS)
 
     # first year of decade (as String) if we have:  yyyu, yyy-, yyy? or yyyx pattern
     #   note that these are the only decade patterns found in our actual date strings in MODS records
@@ -279,7 +279,7 @@ class ParseDate
       "-#{Regexp.last_match(:last)}".to_i if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
     end
 
-    EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}([^\du\-\[]|$)', REGEX_OPTS)
+    EARLY_NUMERIC_REGEX = Regexp.new('^\-?\d{1,3}([^\du\[]|$)', REGEX_OPTS)
 
     # year if date_str contains yyy, yy, y, -y, -yy, -yyy, -yyyy
     # @return [Integer, nil] year if date_str matches pattern; nil otherwise
