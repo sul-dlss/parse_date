@@ -97,7 +97,7 @@ class ParseDate
       date_str.delete('[]') if date_str.match(BRACKETS_BETWEEN_DIGITS_REGEX)
     end
 
-    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{4})\??/m)
+    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*[-—]\s*(?<last>\d{4})\??/m)
 
     # Integer value for latest year if we have "yyyy-yyyy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
@@ -105,7 +105,7 @@ class ParseDate
       Regexp.last_match(:last).to_i if date_str.match(YYYY_HYPHEN_YYYY_REGEX)
     end
 
-    YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*-\s*(?<last>\d{2})\??([^-0-9].*)?$/)
+    YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*[-—]\s*(?<last>\d{2})\??([^-0-9].*)?$/)
 
     # Integer value for latest year if we have "yyyy-yy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
@@ -120,7 +120,8 @@ class ParseDate
     end
 
     YYUU = '\\d{1,2}[u\\-]{2}'
-    YYuu_HYPHEN_YYuu_REGEX = Regexp.new("(?<first>#{YYUU})\\??\\s*-\\s*(?<last>#{YYUU})\\??([^u\\-]|$)??", REGEX_OPTS)
+    YYuu_HYPHEN_YYuu_REGEX =
+      Regexp.new("(?<first>#{YYUU})\\??\\s*[-—]\\s*(?<last>#{YYUU})\\??([^u\\-]|$)??", REGEX_OPTS)
 
     # Integer value for latest year if we have "yyuu-yyuu" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
