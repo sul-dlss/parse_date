@@ -421,6 +421,7 @@ RSpec.describe ParseDate::IntFromString do
       'ca. 9th–8th century B.C.' => -999,
       'ca. 13th–12th century B.C.' => -1399,
       '502-504' => 502,
+      '950-60' => 950,
       '-2100 - -2000' => -2100,
       # '2nd millennium B.C. or ca. 8th century B.C.' => -899, # millennium not yet implemented
     }.each do |example, expected|
@@ -537,6 +538,7 @@ RSpec.describe ParseDate::IntFromString do
       'ca. 9th–8th century B.C.' => -800,
       'ca. 13th–12th century B.C.' => -1200,
       '502-504' => 504,
+      '950-60' => 960,
       '-2100 - -2000' => -2000,
       # '2nd millennium B.C. or ca. 8th century B.C.' => -800, # millennium not yet implemented
     }.each do |example, expected|

@@ -105,7 +105,7 @@ class ParseDate
       Regexp.last_match(:last).to_i if date_str.match(YYYY_HYPHEN_YYYY_REGEX)
     end
 
-    YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*[-—]\s*(?<last>\d{2})\??([^-0-9].*)?$/)
+    YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{3,4})\??\s*[-—]\s*(?<last>\d{2})\??([^-0-9].*)?$/)
 
     # Integer value for latest year if we have "yyyy-yy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
@@ -114,7 +114,7 @@ class ParseDate
       return unless matches
 
       first = Regexp.last_match(:first)
-      century = first[0, 2]
+      century = first[0..-3] # whatever is before the last 2 digits
       last = "#{century}#{Regexp.last_match(:last)}"
       last.to_i if ParseDate.year_range_valid?(first.to_i, last.to_i)
     end
