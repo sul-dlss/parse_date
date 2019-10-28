@@ -521,6 +521,7 @@ RSpec.describe ParseDate::IntFromString do
     end
 
     { # example string as key, expected result as value
+      '1230—1239 CE' => 1239, # weird hyphen from DLME ... longer than regular hyphen
       '1496-1499' => 1499,
       '1496 - 1499' => 1499,
       '1750?-1867' => 1867,
