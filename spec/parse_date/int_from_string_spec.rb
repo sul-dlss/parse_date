@@ -481,9 +481,8 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    it 'nil for -1666' do
-      skip('code broken for -yyyy dates but no existing data for this yet')
-      expect(ParseDate.earliest_year('-1666')).to eq nil
+    it '-1666 for -1666' do
+      expect(ParseDate.earliest_year('-1666')).to eq(-1666)
     end
     it '-1666 for 1666 B.C.' do
       expect(ParseDate.earliest_year('1666 B.C.')).to eq(-1666)
@@ -626,9 +625,8 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    it 'nil for -1666' do
-      skip('code broken for -yyyy dates but no existing data for this yet')
-      expect(ParseDate.latest_year('-1666')).to eq nil
+    it '-1666 for -1666' do
+      expect(ParseDate.latest_year('-1666')).to eq(-1666)
     end
     it '-1666 for 1666 B.C.' do
       expect(ParseDate.latest_year('1666 B.C.')).to eq(-1666)
