@@ -632,6 +632,9 @@ RSpec.describe ParseDate::IntFromString do
     it '-1666 for 1666 B.C.' do
       expect(ParseDate.latest_year('1666 B.C.')).to eq(-1666)
     end
+    it '-100 for -0100' do
+      expect(ParseDate.latest_year('-0100')).to eq(-100)
+    end
 
     [ # bad dates
       '9999',

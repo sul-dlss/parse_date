@@ -63,6 +63,7 @@ class ParseDate
       result ||= ParseDate.send(:yyuu_after_hyphen, date_str)
       result ||= ParseDate.send(:year_after_or, date_str)
       result ||= ParseDate.send(:negative_4digits_after_hyphen, date_str)
+      result ||= ParseDate.send(:negative_first_four_digits, date_str)
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
       result ||= ParseDate.send(:last_year_for_decade, date_str) # 198x or 201x
