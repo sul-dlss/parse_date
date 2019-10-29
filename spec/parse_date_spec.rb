@@ -34,6 +34,8 @@ RSpec.describe ParseDate do
         'between 300 and 150 B.C.' => (-300..-150).to_a,
         '-5 - 3' => (-5..3).to_a,
         '1496-1499' => (1496..1499).to_a,
+        '1230—1239 CE' => (1230..1239).to_a, # alternate hyphen char
+        '996–1021 CE' => (996..1021).to_a, # diff alternate hyphen char
         '1750?-1867' => (1750..1867).to_a,
         '17--?-18--?' => (1700..1899).to_a,
         '1835 or 1836' => [1835, 1836].to_a,

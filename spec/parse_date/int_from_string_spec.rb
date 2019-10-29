@@ -412,6 +412,8 @@ RSpec.describe ParseDate::IntFromString do
       '1750?-1867' => 1750,
       '1265-1371?' => 1265,
       'ca. 1400-1525' => 1400,
+      '1230—1239 CE' => 1230, # alternate hyphen char
+      '996–1021 CE' => 996, # diff alternate hyphen char
       'between 1750-1800?' => 1750,
       '1835 or 1836' => 1835,
       '17-- or 18--' => 1700,
@@ -521,12 +523,13 @@ RSpec.describe ParseDate::IntFromString do
     end
 
     { # example string as key, expected result as value
-      '1230—1239 CE' => 1239, # weird hyphen from DLME ... longer than regular hyphen
       '1496-1499' => 1499,
       '1496 - 1499' => 1499,
       '1750?-1867' => 1867,
       '1265-1371?' => 1371,
       'ca. 1400-1525' => 1525,
+      '1230—1239 CE' => 1239, # alternate hyphen char
+      '996–1021 CE' => 1021, # diff alternate hyphen char
       'between 1750-1800?' => 1800,
       '1757-58' => 1758,
       '1675-76?' => 1676,
