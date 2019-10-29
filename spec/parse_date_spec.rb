@@ -34,17 +34,22 @@ RSpec.describe ParseDate do
         'between 300 and 150 B.C.' => (-300..-150).to_a,
         '-5 - 3' => (-5..3).to_a,
         '1496-1499' => (1496..1499).to_a,
+        '1230—1239 CE' => (1230..1239).to_a, # alternate hyphen char
+        '996–1021 CE' => (996..1021).to_a, # diff alternate hyphen char
         '1750?-1867' => (1750..1867).to_a,
         '17--?-18--?' => (1700..1899).to_a,
         '1835 or 1836' => [1835, 1836].to_a,
         '17-- or 18--?' => (1700..1899).to_a,
         '-2 or 1?' => (-2..1).to_a,
+        '1500? to 1582' => (1500..1582).to_a,
         '17th or 18th century?' => (1600..1799).to_a,
         'ca. 5th–6th century A.D.' => (400..599).to_a,
         'ca. 9th–8th century B.C.' => (-999..-800).to_a,
         'ca. 13th–12th century B.C.' => (-1399..-1200).to_a,
         '5th century B.C.' => (-599..-500).to_a,
         '502-504' => [502, 503, 504],
+        '950-60' => (950..960).to_a,
+        '-0150 - -0100' => (-150..-100).to_a,
         '-2100 - -2000' => (-2100..-2000).to_a,
       }.each do |example, expected|
         it "#{example} returns array from earliest (#{expected.first}) to latest (#{expected.last})" do

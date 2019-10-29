@@ -412,6 +412,8 @@ RSpec.describe ParseDate::IntFromString do
       '1750?-1867' => 1750,
       '1265-1371?' => 1265,
       'ca. 1400-1525' => 1400,
+      '1230—1239 CE' => 1230, # alternate hyphen char
+      '996–1021 CE' => 996, # diff alternate hyphen char
       'between 1750-1800?' => 1750,
       '1835 or 1836' => 1835,
       '17-- or 18--' => 1700,
@@ -421,6 +423,7 @@ RSpec.describe ParseDate::IntFromString do
       'ca. 9th–8th century B.C.' => -999,
       'ca. 13th–12th century B.C.' => -1399,
       '502-504' => 502,
+      '950-60' => 950,
       '-2100 - -2000' => -2100,
       # '2nd millennium B.C. or ca. 8th century B.C.' => -899, # millennium not yet implemented
     }.each do |example, expected|
@@ -481,9 +484,8 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    it 'nil for -1666' do
-      skip('code broken for -yyyy dates but no existing data for this yet')
-      expect(ParseDate.earliest_year('-1666')).to eq nil
+    it '-1666 for -1666' do
+      expect(ParseDate.earliest_year('-1666')).to eq(-1666)
     end
     it '-1666 for 1666 B.C.' do
       expect(ParseDate.earliest_year('1666 B.C.')).to eq(-1666)
@@ -521,13 +523,15 @@ RSpec.describe ParseDate::IntFromString do
     end
 
     { # example string as key, expected result as value
-      '1230—1239 CE' => 1239, # weird hyphen from DLME ... longer than regular hyphen
       '1496-1499' => 1499,
       '1496 - 1499' => 1499,
       '1750?-1867' => 1867,
       '1265-1371?' => 1371,
       'ca. 1400-1525' => 1525,
+      '1230—1239 CE' => 1239, # alternate hyphen char
+      '996–1021 CE' => 1021, # diff alternate hyphen char
       'between 1750-1800?' => 1800,
+      '1500? to 1582' => 1582,
       '1757-58' => 1758,
       '1675-76?' => 1676,
       '1835 or 1836' => 1836,
@@ -538,6 +542,7 @@ RSpec.describe ParseDate::IntFromString do
       'ca. 9th–8th century B.C.' => -800,
       'ca. 13th–12th century B.C.' => -1200,
       '502-504' => 504,
+      '950-60' => 960,
       '-2100 - -2000' => -2000,
       # '2nd millennium B.C. or ca. 8th century B.C.' => -800, # millennium not yet implemented
     }.each do |example, expected|
@@ -626,9 +631,8 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
-    it 'nil for -1666' do
-      skip('code broken for -yyyy dates but no existing data for this yet')
-      expect(ParseDate.latest_year('-1666')).to eq nil
+    it '-1666 for -1666' do
+      expect(ParseDate.latest_year('-1666')).to eq(-1666)
     end
     it '-1666 for 1666 B.C.' do
       expect(ParseDate.latest_year('1666 B.C.')).to eq(-1666)

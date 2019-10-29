@@ -25,6 +25,7 @@ class ParseDate
       return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
 
       result ||= ParseDate.send(:between_earliest_year, date_str)
+      result ||= ParseDate.send(:hyphen_4digit_earliest_year, date_str)
       result ||= ParseDate.send(:negative_first_four_digits, date_str)
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
@@ -97,7 +98,13 @@ class ParseDate
       date_str.delete('[]') if date_str.match(BRACKETS_BETWEEN_DIGITS_REGEX)
     end
 
-    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*[-—]\s*(?<last>\d{4})\??/m)
+    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{3,4})\??\s*(-|—|–|to)\s*(?<last>\d{4})\??/m)
+
+    # Integer value for latest year if we have "yyyy-yyyy" pattern
+    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    def hyphen_4digit_earliest_year(date_str)
+      Regexp.last_match(:first).to_i if date_str.match(YYYY_HYPHEN_YYYY_REGEX)
+    end
 
     # Integer value for latest year if we have "yyyy-yyyy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
@@ -105,7 +112,7 @@ class ParseDate
       Regexp.last_match(:last).to_i if date_str.match(YYYY_HYPHEN_YYYY_REGEX)
     end
 
-    YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{4})\??\s*[-—]\s*(?<last>\d{2})\??([^-0-9].*)?$/)
+    YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{3,4})\??\s*(-|—|–|to)\s*(?<last>\d{2})\??([^-0-9].*)?$/)
 
     # Integer value for latest year if we have "yyyy-yy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
@@ -114,14 +121,14 @@ class ParseDate
       return unless matches
 
       first = Regexp.last_match(:first)
-      century = first[0, 2]
+      century = first[0..-3] # whatever is before the last 2 digits
       last = "#{century}#{Regexp.last_match(:last)}"
       last.to_i if ParseDate.year_range_valid?(first.to_i, last.to_i)
     end
 
     YYUU = '\\d{1,2}[u\\-]{2}'
     YYuu_HYPHEN_YYuu_REGEX =
-      Regexp.new("(?<first>#{YYUU})\\??\\s*[-—]\\s*(?<last>#{YYUU})\\??([^u\\-]|$)??", REGEX_OPTS)
+      Regexp.new("(?<first>#{YYUU})\\??\\s*(-|—|–|to)\\s*(?<last>#{YYUU})\\??([^u\\-]|$)??", REGEX_OPTS)
 
     # Integer value for latest year if we have "yyuu-yyuu" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
@@ -139,7 +146,8 @@ class ParseDate
     end
 
     # NOTE: some actual data seemed to have a diff hyphen char. (slightly longer)
-    YY_YY_CENTURY_REGEX = Regexp.new(/(?<first>\d{1,2})[a-z]{2}?\s*(-|–|or)\s*(?<last>\d{1,2})[a-z]{2}?\s+centur.*/im)
+    YY_YY_CENTURY_REGEX =
+      Regexp.new(/(?<first>\d{1,2})[a-z]{2}?\s*(-|–|–|or|to)\s*(?<last>\d{1,2})[a-z]{2}?\s+centur.*/im)
 
     # Integer value for latest year if we have nth-nth century pattern
     # @return [Integer, nil] yy99 if date_str matches pattern; nil otherwise
@@ -182,7 +190,7 @@ class ParseDate
     # looks for -yyyy after hyphen and returns if found
     # @return [String, nil] negative 4 digit year (e.g. -1865) if date_str has -yyyy - -yyyy, nil otherwise
     def negative_4digits_after_hyphen(date_str)
-      Regexp.last_match(1) if date_str.match(/\-\d{4}\s*\-\s*(\-\d{4})/)
+      Regexp.last_match(1) if date_str.match(/\-\d{4}\s*(?:-|–|–|or|to)\s*(\-\d{4})/)
     end
 
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
@@ -304,7 +312,7 @@ class ParseDate
     end
 
     FIRST_LAST_EARLY_NUMERIC_REGEX =
-      Regexp.new(/^(?<first>\-?\d{1,3})\??\s*(-|–|or)\s*(?<last>\-?\d{1,4})\??([^\du\-\[]|$)/im)
+      Regexp.new(/^(?<first>\-?\d{1,3})\??\s*(-|–|–|or|to)\s*(?<last>\-?\d{1,4})\??([^\du\-\[]|$)/im)
 
     # Integer value for latest year if we have early numeric year range or single early numeric year
     # @return [Integer, nil] year if date_str matches pattern; nil otherwise

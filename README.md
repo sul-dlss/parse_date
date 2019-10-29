@@ -52,13 +52,18 @@ ParseDate.parse_range('17--?-18--?')                    # (1700..1899).to_a
 ParseDate.parse_range('1835 or 1836')                   # [1835, 1836]
 ParseDate.parse_range('17-- or 18--?')                  # (1700..1899).to_a
 ParseDate.parse_range('-2 or 1?')                       # (-2..1).to_a
+ParseDate.parse_range('1500? to 1582')                  # (1500..1582).to_a
 ParseDate.parse_range('17th or 18th century?')          # (1600..1799).to_a
 ParseDate.parse_range('ca. 5th–6th century A.D.')       # (400..599).to_a
 ParseDate.parse_range('ca. 9th–8th century B.C.')       # (-999..-800).to_a
 ParseDate.parse_range('ca. 13th–12th century B.C.')     # (-1399..-1200).to_a
 ParseDate.parse_range('5th century B.C.')               # (-599..-500).to_a
 ParseDate.parse_range('502-504')                        # [502, 503, 504]
+ParseDate.parse_range('950-60')                         # (950..960).to_a
+ParseDate.parse_range('-0150 - -0100')                  # (-150..-100).to_a
 ParseDate.parse_range('-2100 - -2000')                  # (-2100..-2000).to_a
+ParseDate.parse_range('1230—1239 CE')                   # (1230..1239).to_a (alternate hyphen char)
+ParseDate.parse_range('996–1021 CE')                    # (996..1021).to_a (diff alternate hyphen char)
 ParseDate.parse_range('1975 - 1905')                    # last year > first year, raises error
 ParseDate.parse_range('-100 - -150')                    # last year > first year, raises error
 ParseDate.parse_range('1975 or 1905')                   # last year > first year, raises error
@@ -82,7 +87,10 @@ ParseDate.earliest_year('17uu')                         # 1700
 ParseDate.earliest_year('between 1694 and 1799')        # 1694
 ParseDate.earliest_year('between 1 and 5')              # 1
 ParseDate.earliest_year('between 300 and 150 B.C.')     # -300
+ParseDate.earliest_year('1500? to 1582')                # 1500
 ParseDate.earliest_year('1496-1499')                    # 1496
+ParseDate.earliest_year('1230—1239 CE')                 # 1230 (alternate hyphen char)
+ParseDate.earliest_year('996–1021 CE')                  # 996 (diff alternate hyphen char)
 ParseDate.earliest_year('1750?-1867')                   # 1750
 ParseDate.earliest_year('17--?-18--?')                  # 1700
 ParseDate.earliest_year('1835 or 1836')                 # 1835
@@ -93,6 +101,8 @@ ParseDate.earliest_year('ca. 9th–8th century B.C.')     # -999
 ParseDate.earliest_year('ca. 13th–12th century B.C.')   # -1399
 ParseDate.earliest_year('5th century B.C.')             # -599
 ParseDate.earliest_year('502-504')                      # 502
+ParseDate.earliest_year('950-60')                       # 950
+ParseDate.earliest_year('-0150 - -0100')                # -150
 ParseDate.earliest_year('-2100 - -2000')                # -2100
 
 ParseDate.latest_year('20000222')                       # 2000
@@ -105,7 +115,10 @@ ParseDate.latest_year('17uu')                           # 1799
 ParseDate.latest_year('between 1694 and 1799')          # 1799
 ParseDate.latest_year('between 1 and 5')                # 5
 ParseDate.latest_year('between 300 and 150 B.C.')       # -150
+ParseDate.latest_year('1500? to 1582')                  # 1582
 ParseDate.latest_year('1496-1499')                      # 1499
+ParseDate.latest_year('1230—1239 CE')                   # 1239 (alternate hyphen char)
+ParseDate.latest_year('996–1021 CE')                    # 1021 (diff alternate hyphen char)
 ParseDate.latest_year('1750?-1867')                     # 1867
 ParseDate.latest_year('17--?-18--?')                    # 1899
 ParseDate.latest_year('1757-58')                        # 1758
@@ -119,6 +132,8 @@ ParseDate.latest_year('ca. 13th–12th century B.C.')     # -1200
 ParseDate.latest_year('5th century B.C.')               # -500
 ParseDate.latest_year('-5 - 3')                         # 3
 ParseDate.latest_year('502-504')                        # 504
+ParseDate.latest_year('950-60')                         # 960
+ParseDate.latest_year('-0150 - -0100')                  # -100
 ParseDate.latest_year('-2100 - -2000')                  # -2000
 
 ParseDate.range_array('1993', '1995')                   # [1993, 1994, 1995]
