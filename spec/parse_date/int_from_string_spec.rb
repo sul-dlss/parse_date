@@ -531,6 +531,7 @@ RSpec.describe ParseDate::IntFromString do
       '1230—1239 CE' => 1239, # alternate hyphen char
       '996–1021 CE' => 1021, # diff alternate hyphen char
       'between 1750-1800?' => 1800,
+      '1500? to 1582' => 1582,
       '1757-58' => 1758,
       '1675-76?' => 1676,
       '1835 or 1836' => 1836,

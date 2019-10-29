@@ -52,6 +52,7 @@ ParseDate.parse_range('17--?-18--?')                    # (1700..1899).to_a
 ParseDate.parse_range('1835 or 1836')                   # [1835, 1836]
 ParseDate.parse_range('17-- or 18--?')                  # (1700..1899).to_a
 ParseDate.parse_range('-2 or 1?')                       # (-2..1).to_a
+ParseDate.parse_range('1500? to 1582')                  # (1500..1582).to_a
 ParseDate.parse_range('17th or 18th century?')          # (1600..1799).to_a
 ParseDate.parse_range('ca. 5th–6th century A.D.')       # (400..599).to_a
 ParseDate.parse_range('ca. 9th–8th century B.C.')       # (-999..-800).to_a
@@ -86,6 +87,7 @@ ParseDate.earliest_year('17uu')                         # 1700
 ParseDate.earliest_year('between 1694 and 1799')        # 1694
 ParseDate.earliest_year('between 1 and 5')              # 1
 ParseDate.earliest_year('between 300 and 150 B.C.')     # -300
+ParseDate.earliest_year('1500? to 1582')                # 1500
 ParseDate.earliest_year('1496-1499')                    # 1496
 ParseDate.earliest_year('1230—1239 CE')                 # 1230 (alternate hyphen char)
 ParseDate.earliest_year('996–1021 CE')                  # 996 (diff alternate hyphen char)
@@ -112,6 +114,7 @@ ParseDate.latest_year('17uu')                           # 1799
 ParseDate.latest_year('between 1694 and 1799')          # 1799
 ParseDate.latest_year('between 1 and 5')                # 5
 ParseDate.latest_year('between 300 and 150 B.C.')       # -150
+ParseDate.latest_year('1500? to 1582')                  # 1582
 ParseDate.latest_year('1496-1499')                      # 1499
 ParseDate.latest_year('1230—1239 CE')                   # 1239 (alternate hyphen char)
 ParseDate.latest_year('996–1021 CE')                    # 1021 (diff alternate hyphen char)

@@ -41,6 +41,7 @@ RSpec.describe ParseDate do
         '1835 or 1836' => [1835, 1836].to_a,
         '17-- or 18--?' => (1700..1899).to_a,
         '-2 or 1?' => (-2..1).to_a,
+        '1500? to 1582' => (1500..1582).to_a,
         '17th or 18th century?' => (1600..1799).to_a,
         'ca. 5th–6th century A.D.' => (400..599).to_a,
         'ca. 9th–8th century B.C.' => (-999..-800).to_a,
