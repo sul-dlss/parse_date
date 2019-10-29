@@ -101,6 +101,7 @@ ParseDate.earliest_year('ca. 9th–8th century B.C.')     # -999
 ParseDate.earliest_year('ca. 13th–12th century B.C.')   # -1399
 ParseDate.earliest_year('5th century B.C.')             # -599
 ParseDate.earliest_year('502-504')                      # 502
+ParseDate.earliest_year('950-60')                       # 950
 ParseDate.earliest_year('-0150 - -0100')                # -150
 ParseDate.earliest_year('-2100 - -2000')                # -2100
 
@@ -131,6 +132,7 @@ ParseDate.latest_year('ca. 13th–12th century B.C.')     # -1200
 ParseDate.latest_year('5th century B.C.')               # -500
 ParseDate.latest_year('-5 - 3')                         # 3
 ParseDate.latest_year('502-504')                        # 504
+ParseDate.latest_year('950-60')                         # 960
 ParseDate.latest_year('-0150 - -0100')                  # -100
 ParseDate.latest_year('-2100 - -2000')                  # -2000
 
