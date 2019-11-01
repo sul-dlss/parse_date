@@ -67,9 +67,11 @@ ParseDate.parse_range('996–1021 CE')                    # (996..1021).to_a (di
 ParseDate.parse_range('1975 - 1905')                    # last year > first year, raises error
 ParseDate.parse_range('-100 - -150')                    # last year > first year, raises error
 ParseDate.parse_range('1975 or 1905')                   # last year > first year, raises error
-ParseDate.parse_range('2050')                           # year later than current year + 1, raises error
-ParseDate.parse_range('random text')                    # can't parse years, raises error
-ParseDate.parse_range(nil)                              # can't parse years, raises error
+ParseDate.parse_range('1975 - 2050')                    # single invalid year endpoint, raises error
+ParseDate.parse_range('2050')                           # nil - only invalid year endpoints present
+ParseDate.parse_range('2045 - 2050')                    # nil - only invalid year endpoints present
+ParseDate.parse_range('random text')                    # nil - can't parse years
+ParseDate.parse_range(nil)                              # nil - can't parse years
 
 ParseDate.earliest_year('12/25/00')                     # 2000
 ParseDate.earliest_year('5-1-21')                       # 1921

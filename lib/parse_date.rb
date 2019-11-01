@@ -42,6 +42,7 @@ class ParseDate
   def self.parse_range(date_str)
     first = earliest_year(date_str)
     last = latest_year(date_str)
+    return nil unless first || last
     raise ParseDate::Error, "Unable to parse range from '#{date_str}'" unless year_range_valid?(first, last)
 
     range_array(first, last)

@@ -59,10 +59,21 @@ RSpec.describe ParseDate do
 
       context 'when year is invalid' do
         [
+          '2050', # all endpoints later than current year + 1
+          '2045 - 2050', # all endpoints later than current year + 1
+        ].each do |example|
+          it "'#{example}' returns nil" do
+            expect(ParseDate.parse_range(example)).to be nil
+          end
+        end
+      end
+
+      context 'when range is invalid' do
+        [
           '1975 or 1905', # last year > first year
           '-100 - -150', # last year > first year
           '1975 - 1905', # last year > first year
-          '2050', # year later than current year + 1
+          '1975 - 2050', # one invalid year endpoint
         ].each do |example|
           it "raises error: '#{example}'" do
             exp_msg_regex = /Unable to parse range from '#{example}'/
@@ -71,14 +82,16 @@ RSpec.describe ParseDate do
         end
       end
     end
+
     context 'when years cannot be parsed' do
       [
         'random text',
+        '[n.d.]',
         nil,
+        '2045 - 2050', # only invalid year endpoints
       ].each do |example|
-        it "raises error: '#{example}'" do
-          exp_msg_regex = /Unable to parse range from '#{example}'/
-          expect { ParseDate.parse_range(example) }.to raise_error(ParseDate::Error, exp_msg_regex)
+        it "'#{example}' returns nil" do
+          expect(ParseDate.parse_range(example)).to be nil
         end
       end
     end
