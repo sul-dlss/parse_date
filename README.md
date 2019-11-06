@@ -40,6 +40,12 @@ ParseDate.parse_range('195-')                           # (1950..1959).to_a
 ParseDate.parse_range('199u')                           # (1990..1999).to_a
 ParseDate.parse_range('197?')                           # (1970..1979).to_a
 ParseDate.parse_range('196x')                           # (1960..1969).to_a
+ParseDate.parse_range('1990s')                          # (1990..1999).to_a
+ParseDate.parse_range('1990s?')                         # (1990..1999).to_a
+ParseDate.parse_range('ca. 1930s')                      # (1930..1939).to_a
+ParseDate.parse_range('1928-1980s')                     # (1928..1989).to_a
+ParseDate.parse_range('1940s-1990')                     # (1940..1990).to_a
+ParseDate.parse_range('1980s-1990s')                    # (1980..1999).to_a
 ParseDate.parse_range('18th century CE')                # (1700..1799).to_a
 ParseDate.parse_range('17uu')                           # (1700..1799).to_a
 ParseDate.parse_range('between 1694 and 1799')          # (1694..1799).to_a
@@ -112,6 +118,12 @@ ParseDate.latest_year('195-')                           # 1959
 ParseDate.latest_year('199u')                           # 1999
 ParseDate.latest_year('197?')                           # 1979
 ParseDate.latest_year('196x')                           # 1969
+ParseDate.latest_year('1990s')                          # 1999
+ParseDate.latest_year('1990s?')                         # 1999
+ParseDate.latest_year('ca. 1930s')                      # 1939
+ParseDate.latest_year('1928-1980s')                     # 1989
+ParseDate.latest_year('1940s-1990')                     # 1990
+ParseDate.latest_year('1980s-1990s')                    # 1999
 ParseDate.latest_year('18th century CE')                # 1799
 ParseDate.latest_year('17uu')                           # 1799
 ParseDate.latest_year('between 1694 and 1799')          # 1799
