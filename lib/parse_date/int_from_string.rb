@@ -61,6 +61,7 @@ class ParseDate
       result ||= ParseDate.send(:between_latest_year, date_str)
       result ||= ParseDate.send(:hyphen_4digit_latest_year, date_str)
       result ||= ParseDate.send(:hyphen_2digit_latest_year, date_str)
+      result ||= ParseDate.send(:hyphen_1digit_latest_year, date_str)
       result ||= ParseDate.send(:yyuu_after_hyphen, date_str)
       result ||= ParseDate.send(:year_after_or, date_str)
       result ||= ParseDate.send(:negative_4digits_after_hyphen, date_str)
@@ -75,7 +76,7 @@ class ParseDate
       unless result
         # try removing brackets between digits in case we have 169[5] or [18]91
         no_brackets = ParseDate.send(:remove_brackets, date_str)
-        return earliest_year(no_brackets) if no_brackets
+        return latest_year(no_brackets) if no_brackets
       end
       result.to_i if result && year_int_valid?(result.to_i)
     end
@@ -130,6 +131,20 @@ class ParseDate
       first = Regexp.last_match(:first)
       century = first[0..-3] # whatever is before the last 2 digits
       last = "#{century}#{Regexp.last_match(:last)}"
+      last.to_i if ParseDate.year_range_valid?(first.to_i, last.to_i)
+    end
+
+    YYYY_HYPHEN_Y_REGEX = Regexp.new(/(?<first>\d{3,4})\??\s*(-|—|–|to)\s*(?<last>\d{1})\??([^-0-9].*)?$/)
+
+    # Integer value for latest year if we have "yyyy-y" pattern
+    # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
+    def hyphen_1digit_latest_year(date_str)
+      matches = date_str.match(YYYY_HYPHEN_Y_REGEX)
+      return unless matches
+
+      first = Regexp.last_match(:first)
+      decade = first[0..-2] # whatever is before the last digit
+      last = "#{decade}#{Regexp.last_match(:last)}"
       last.to_i if ParseDate.year_range_valid?(first.to_i, last.to_i)
     end
 

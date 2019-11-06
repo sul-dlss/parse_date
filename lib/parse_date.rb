@@ -72,7 +72,7 @@ class ParseDate
     return [] unless last_year || first_year
     return [first_year] if last_year.nil? && first_year
     return [last_year] if first_year.nil? && last_year
-    raise(StandardError, "unable to create year range array from #{first_year}, #{last_year}") unless
+    raise(ParseDate::Error, "unable to create year range array from #{first_year}, #{last_year}") unless
       year_range_valid?(first_year, last_year)
 
     Range.new(first_year, last_year).to_a

@@ -17,7 +17,14 @@ Metrics/LineLength:
   Max: 120
 
 Metrics/MethodLength:
-  Max: 25
+  Max: 15
+  ExcludedMethods:
+    - earliest_year
+    - latest_year
+
+Metrics/ModuleLength:
+  Exclude:
+    - lib/parse_date/int_from_string.rb
 
 Style/NumericLiterals:
   Enabled: false
