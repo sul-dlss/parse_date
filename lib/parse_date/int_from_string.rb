@@ -65,6 +65,7 @@ class ParseDate
       result ||= ParseDate.send(:year_after_or, date_str)
       result ||= ParseDate.send(:negative_4digits_after_hyphen, date_str)
       result ||= ParseDate.send(:negative_first_four_digits, date_str)
+      result ||= ParseDate.send(:last_year_for_0s_decade, date_str)
       result ||= ParseDate.send(:first_four_digits, date_str)
       result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
       result ||= ParseDate.send(:last_year_for_decade, date_str) # 198x or 201x
@@ -98,7 +99,7 @@ class ParseDate
       date_str.delete('[]') if date_str.match(BRACKETS_BETWEEN_DIGITS_REGEX)
     end
 
-    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{3,4})\??\s*(-|—|–|to)\s*(?<last>\d{4})\??/m)
+    YYYY_HYPHEN_YYYY_REGEX = Regexp.new(/(?<first>\d{3,4})s?\??\s*(-|—|–|to)\s*(?<last>\d{4}s?)\??/m)
 
     # Integer value for latest year if we have "yyyy-yyyy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
@@ -109,7 +110,13 @@ class ParseDate
     # Integer value for latest year if we have "yyyy-yyyy" pattern
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def hyphen_4digit_latest_year(date_str)
-      Regexp.last_match(:last).to_i if date_str.match(YYYY_HYPHEN_YYYY_REGEX)
+      latest = Regexp.last_match(:last) if date_str.match(YYYY_HYPHEN_YYYY_REGEX)
+      if ParseDate.year_int_valid?(latest.to_i)
+        ParseDate.latest_year(latest) # accommodates '1980s - 1990s'
+      else
+        # return the bad value;  parse_range might need to complain about it
+        latest
+      end
     end
 
     YYYY_HYPHEN_YY_REGEX = Regexp.new(/(?<first>\d{3,4})\??\s*(-|—|–|to)\s*(?<last>\d{2})\??([^-0-9].*)?$/)
@@ -217,6 +224,16 @@ class ParseDate
       date_obj.year.to_s if date_obj
     rescue ArgumentError
       nil # explicitly want nil if date won't parse
+    end
+
+    DECADE_0S_REGEX = Regexp.new('(^|\D)\d{3}0\'?s($|\D)', REGEX_OPTS)
+
+    # last year of decade (as String) if we have:  yyy0s flavor pattern
+    # @return [String, nil] 4 digit year (e.g. 1869, 1959) if date_str matches pattern, nil otherwise
+    def last_year_for_0s_decade(date_str)
+      decade_matches = date_str.match(DECADE_0S_REGEX)
+      changed_to_nine = decade_matches.to_s.sub(/0\'?s/, '9') if decade_matches
+      ParseDate.first_four_digits(changed_to_nine) if changed_to_nine
     end
 
     DECADE_4CHAR_REGEX = Regexp.new('(^|\D)\d{3}[u\-?x]($|\D)', REGEX_OPTS)

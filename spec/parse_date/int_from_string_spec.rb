@@ -406,6 +406,20 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
 
+    {
+      '1990s' => 1990,
+      "1950's" => 1950,
+      '1990s?' => 1990,
+      'ca. 1930s' => 1930,
+      '1928-1980s' => 1928,
+      '1940s-1990' => 1940,
+      '1980s-1990s' => 1980,
+    }.each do |example, expected|
+      it "#{expected} for #{example}" do
+        expect(ParseDate.earliest_year(example)).to eq expected
+      end
+    end
+
     { # example string as key, expected result as value
       '1496-1499' => 1496,
       '1496 - 1499' => 1496,
@@ -552,22 +566,27 @@ RSpec.describe ParseDate::IntFromString do
     end
 
     {
-      '199u' => '1999',
-      '200-' => '2009',
-      '201?' => '2019',
-      '115x' => '1159',
-      '167-?]' => '1679',
-      '[171-?]' => '1719',
-      '[189-]' => '1899',
-      'ca.170-?]' => '1709',
-      '200-?]' => '2009',
+      '199u' => 1999,
+      '200-' => 2009,
+      '201?' => 2019,
+      '115x' => 1159,
+      '167-?]' => 1679,
+      '[171-?]' => 1719,
+      '[189-]' => 1899,
+      'ca.170-?]' => 1709,
+      '200-?]' => 2009,
+      '1990s' => 1999,
+      "1950's" => 1959,
+      '1990s?' => 1999,
+      'ca. 1930s' => 1939,
+      '1928-1980s' => 1989,
+      '1940s-1990' => 1990,
+      '1980s-1990s' => 1999,
       # not yet
-      # '1950s' => '1959',
       # 'early 1890s' => '1895',
-      # "1950's" => '1959'
     }.each do |example, expected|
       it "#{expected} for decade value #{example}" do
-        expect(ParseDate.latest_year(example)).to eq expected.to_i
+        expect(ParseDate.latest_year(example)).to eq expected
       end
     end
 
