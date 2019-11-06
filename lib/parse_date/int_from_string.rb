@@ -75,7 +75,7 @@ class ParseDate
       unless result
         # try removing brackets between digits in case we have 169[5] or [18]91
         no_brackets = ParseDate.send(:remove_brackets, date_str)
-        return earliest_year(no_brackets) if no_brackets
+        return latest_year(no_brackets) if no_brackets
       end
       result.to_i if result && year_int_valid?(result.to_i)
     end
