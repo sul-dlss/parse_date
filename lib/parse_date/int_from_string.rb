@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'date' # so upstream callers don't have to require it
-
 class ParseDate
 
   # Parse (Year) Integers from Date Strings
