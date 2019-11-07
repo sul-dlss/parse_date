@@ -20,24 +20,11 @@ class ParseDate
       return if date_str == '0000-00-00' # shpc collection has these useless dates
 
       # B.C. first (match longest string first)
-      return ParseDate.send(:earliest_century_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
-      return ParseDate.send(:between_bc_earliest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
-      return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
+      bc_result = ParseDate.send(:earliest_year_bc_parsing, date_str)
+      return bc_result if bc_result
 
-      [
-        # longest string first, more or less
-        :between_earliest_year,
-        :hyphen_4digit_earliest_year,
-        :negative_first_four_digits,
-        :first_four_digits,
-        :year_from_mm_dd_yy,
-        :first_year_for_decade, # 198x or 201x
-        :first_year_for_century, # includes BC
-        :year_for_early_numeric
-      ].each do |method_name|
-        result = ParseDate.send(method_name, date_str)
-        return result.to_i if result && year_int_valid?(result.to_i)
-      end
+      result = ParseDate.send(:earliest_year_parsing, date_str)
+      return result if result
 
       # try removing brackets between digits in case we have 169[5] or [18]91
       no_brackets = ParseDate.send(:remove_brackets, date_str)
@@ -99,6 +86,30 @@ class ParseDate
     end
 
     protected
+
+    def earliest_year_bc_parsing(date_str)
+      return ParseDate.send(:earliest_century_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
+      return ParseDate.send(:between_bc_earliest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
+      return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
+    end
+
+    def earliest_year_parsing(date_str)
+      [
+        # longest string first, more or less
+        :between_earliest_year,
+        :hyphen_4digit_earliest_year,
+        :negative_first_four_digits,
+        :first_four_digits,
+        :year_from_mm_dd_yy,
+        :first_year_for_decade, # 198x or 201x
+        :first_year_for_century, # includes some BC
+        :year_for_early_numeric
+      ].each do |method_name|
+        result = ParseDate.send(method_name, date_str)
+        return result.to_i if result && year_int_valid?(result.to_i)
+      end
+      nil
+    end
 
     REGEX_OPTS = Regexp::IGNORECASE | Regexp::MULTILINE
     BC_REGEX = Regexp.new(/\s*B\.?\s*C\.?/im)
