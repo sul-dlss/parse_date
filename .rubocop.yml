@@ -19,8 +19,7 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Max: 15
   ExcludedMethods:
-    - earliest_year
-    - latest_year
+    - latest_year_parsing
 
 Metrics/ModuleLength:
   Exclude:

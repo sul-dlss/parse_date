@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'date' # so upstream callers don't have to require it
-
 class ParseDate
 
   # Parse (Year) Integers from Date Strings
@@ -20,24 +18,15 @@ class ParseDate
       return if date_str == '0000-00-00' # shpc collection has these useless dates
 
       # B.C. first (match longest string first)
-      return ParseDate.send(:earliest_century_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
-      return ParseDate.send(:between_bc_earliest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
-      return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
+      bc_result = ParseDate.send(:earliest_year_bc_parsing, date_str)
+      return bc_result if bc_result
 
-      result ||= ParseDate.send(:between_earliest_year, date_str)
-      result ||= ParseDate.send(:hyphen_4digit_earliest_year, date_str)
-      result ||= ParseDate.send(:negative_first_four_digits, date_str)
-      result ||= ParseDate.send(:first_four_digits, date_str)
-      result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
-      result ||= ParseDate.send(:first_year_for_decade, date_str) # 198x or 201x
-      result ||= ParseDate.send(:first_year_for_century, date_str) # includes BC
-      result ||= ParseDate.send(:year_for_early_numeric, date_str)
-      unless result
-        # try removing brackets between digits in case we have 169[5] or [18]91
-        no_brackets = ParseDate.send(:remove_brackets, date_str)
-        return earliest_year(no_brackets) if no_brackets
-      end
-      result.to_i if result && year_int_valid?(result.to_i)
+      result = ParseDate.send(:earliest_year_parsing, date_str)
+      return result if result
+
+      # try removing brackets between digits in case we have 169[5] or [18]91
+      no_brackets = ParseDate.send(:remove_brackets, date_str)
+      earliest_year(no_brackets) if no_brackets
     end
 
     # latest year as Integer if we can parse one from date_str
@@ -53,32 +42,15 @@ class ParseDate
       return if date_str == '0000-00-00' # shpc collection has these useless dates
 
       # B.C. first (match longest string first)
-      return ParseDate.send(:last_year_mult_centuries_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
-      return ParseDate.send(:between_bc_latest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
-      return ParseDate.send(:last_year_for_bc_century, date_str) if date_str.match(BC_CENTURY_REGEX)
-      return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(BC_REGEX)
+      bc_result = ParseDate.send(:latest_year_bc_parsing, date_str)
+      return bc_result if bc_result
 
-      result ||= ParseDate.send(:between_latest_year, date_str)
-      result ||= ParseDate.send(:hyphen_4digit_latest_year, date_str)
-      result ||= ParseDate.send(:hyphen_2digit_latest_year, date_str)
-      result ||= ParseDate.send(:hyphen_1digit_latest_year, date_str)
-      result ||= ParseDate.send(:yyuu_after_hyphen, date_str)
-      result ||= ParseDate.send(:year_after_or, date_str)
-      result ||= ParseDate.send(:negative_4digits_after_hyphen, date_str)
-      result ||= ParseDate.send(:negative_first_four_digits, date_str)
-      result ||= ParseDate.send(:last_year_for_0s_decade, date_str)
-      result ||= ParseDate.send(:first_four_digits, date_str)
-      result ||= ParseDate.send(:year_from_mm_dd_yy, date_str)
-      result ||= ParseDate.send(:last_year_for_decade, date_str) # 198x or 201x
-      result ||= ParseDate.send(:last_year_mult_centuries, date_str) # nth-nth century
-      result ||= ParseDate.send(:last_year_for_century, date_str)
-      result ||= ParseDate.send(:last_year_for_early_numeric, date_str)
-      unless result
-        # try removing brackets between digits in case we have 169[5] or [18]91
-        no_brackets = ParseDate.send(:remove_brackets, date_str)
-        return latest_year(no_brackets) if no_brackets
-      end
-      result.to_i if result && year_int_valid?(result.to_i)
+      result = ParseDate.send(:latest_year_parsing, date_str)
+      return result if result
+
+      # try removing brackets between digits in case we have 169[5] or [18]91
+      no_brackets = ParseDate.send(:remove_brackets, date_str)
+      latest_year(no_brackets) if no_brackets
     end
 
     # true if the year is between -9999 and (current year + 1), inclusive
@@ -90,6 +62,63 @@ class ParseDate
     end
 
     protected
+
+    def earliest_year_bc_parsing(date_str)
+      return ParseDate.send(:earliest_century_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
+      return ParseDate.send(:between_bc_earliest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
+      return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
+    end
+
+    def earliest_year_parsing(date_str)
+      [
+        # longest string first, more or less
+        :between_earliest_year,
+        :hyphen_4digit_earliest_year,
+        :negative_first_four_digits,
+        :first_four_digits,
+        :year_from_mm_dd_yy,
+        :first_year_for_decade, # 198x or 201x
+        :first_year_for_century, # includes some BC
+        :year_for_early_numeric
+      ].each do |method_name|
+        result = ParseDate.send(method_name, date_str)
+        return result.to_i if result && year_int_valid?(result.to_i)
+      end
+      nil
+    end
+
+    def latest_year_bc_parsing(date_str)
+      return ParseDate.send(:last_year_mult_centuries_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
+      return ParseDate.send(:between_bc_latest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
+      return ParseDate.send(:last_year_for_bc_century, date_str) if date_str.match(BC_CENTURY_REGEX)
+      return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(BC_REGEX)
+    end
+
+    def latest_year_parsing(date_str)
+      result = nil
+      [
+        # longest string first, more or less
+        :between_latest_year,
+        :hyphen_4digit_latest_year,
+        :hyphen_2digit_latest_year,
+        :hyphen_1digit_latest_year,
+        :yyuu_after_hyphen,
+        :year_after_or,
+        :negative_4digits_after_hyphen,
+        :negative_first_four_digits,
+        :last_year_for_0s_decade,
+        :first_four_digits,
+        :year_from_mm_dd_yy,
+        :last_year_for_decade, # 198x or 201x
+        :last_year_mult_centuries, # nth-nth century
+        :last_year_for_century,
+        :last_year_for_early_numeric
+      ].each do |method|
+        result ||= ParseDate.send(method, date_str)
+        return result.to_i if result && year_int_valid?(result.to_i)
+      end
+      nil
+    end
 
     REGEX_OPTS = Regexp::IGNORECASE | Regexp::MULTILINE
     BC_REGEX = Regexp.new(/\s*B\.?\s*C\.?/im)
