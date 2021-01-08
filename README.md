@@ -1,5 +1,5 @@
 [![Gem Version](https://badge.fury.io/rb/parse_date.svg)](https://badge.fury.io/rb/parse_date)
-[![Build Status](https://travis-ci.org/sul-dlss/parse_date.svg?branch=master)](https://travis-ci.org/sul-dlss/parse_date)
+[![Build Status](https://travis-ci.com/sul-dlss/parse_date.svg?branch=main)](https://travis-ci.com/sul-dlss/parse_date)
 [![Maintainability](https://api.codeclimate.com/v1/badges/2d006b4ccb3100434f4a/maintainability)](https://codeclimate.com/github/sul-dlss/parse_date/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/2d006b4ccb3100434f4a/test_coverage)](https://codeclimate.com/github/sul-dlss/parse_date/test_coverage)
 
