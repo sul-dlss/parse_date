@@ -94,6 +94,7 @@ class ParseDate
       return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(BC_REGEX)
     end
 
+    # rubocop:disable Metrics/MethodLength
     def latest_year_parsing(date_str)
       result = nil
       [
@@ -119,10 +120,11 @@ class ParseDate
       end
       nil
     end
+    # rubocop:enable Metrics/MethodLength
 
     REGEX_OPTS = Regexp::IGNORECASE | Regexp::MULTILINE
     BC_REGEX = Regexp.new(/\s*B\.?\s*C\.?/im)
-    BRACKETS_BETWEEN_DIGITS_REGEX = Regexp.new('\d[' + Regexp.escape('[]') + ']\d')
+    BRACKETS_BETWEEN_DIGITS_REGEX = Regexp.new("\\d[#{Regexp.escape('[]')}]\\d")
 
     # removes brackets between digits such as 169[5] or [18]91
     def remove_brackets(date_str)
@@ -235,13 +237,13 @@ class ParseDate
     # looks for -yyyy at beginning of date_str and returns if found
     # @return [String, nil] negative 4 digit year (e.g. -1865) if date_str has -yyyy, nil otherwise
     def negative_first_four_digits(date_str)
-      Regexp.last_match(1) if date_str.match(/^(\-\d{4})/)
+      Regexp.last_match(1) if date_str.match(/^(-\d{4})/)
     end
 
     # looks for -yyyy after hyphen and returns if found
     # @return [String, nil] negative 4 digit year (e.g. -1865) if date_str has -yyyy - -yyyy, nil otherwise
     def negative_4digits_after_hyphen(date_str)
-      Regexp.last_match(1) if date_str.match(/\-\d{4}\s*(?:-|–|–|or|to)\s*(\-\d{4})/)
+      Regexp.last_match(1) if date_str.match(/-\d{4}\s*(?:-|–|–|or|to)\s*(-\d{4})/)
     end
 
     # looks for 4 consecutive digits in date_str and returns first occurrence if found
@@ -257,7 +259,7 @@ class ParseDate
     #   1/1/27  ->  1927
     # @return [String, nil] 4 digit year (e.g. 1865, 0950) if date_str matches pattern, nil otherwise
     def year_from_mm_dd_yy(date_str)
-      slash_matches = date_str.match(/\d{1,2}\/\d{1,2}\/\d{2}/)
+      slash_matches = date_str.match(%r{\d{1,2}/\d{1,2}/\d{2}})
       if slash_matches
         date_obj = Date.strptime(date_str, '%m/%d/%y')
       else
@@ -276,7 +278,7 @@ class ParseDate
     # @return [String, nil] 4 digit year (e.g. 1869, 1959) if date_str matches pattern, nil otherwise
     def last_year_for_0s_decade(date_str)
       decade_matches = date_str.match(DECADE_0S_REGEX)
-      changed_to_nine = decade_matches.to_s.sub(/0\'?s/, '9') if decade_matches
+      changed_to_nine = decade_matches.to_s.sub(/0'?s/, '9') if decade_matches
       ParseDate.first_four_digits(changed_to_nine) if changed_to_nine
     end
 
@@ -306,12 +308,14 @@ class ParseDate
 
     # first year of century if we have:  yyuu, yy--, yy--? or xxth century pattern; handles B.C.
     # @return [Integer, nil] yy00 if date_str matches pattern, nil otherwise
+    # rubocop:disable Metrics/AbcSize
     def first_year_for_century(date_str)
       return Regexp.last_match(1).to_i * -100 - 99 if date_str.match(BC_CENTURY_REGEX)
       return Regexp.last_match(1).to_i * 100 if date_str.match(CENTURY_4CHAR_REGEX)
       return (Regexp.last_match(:first).to_i - 1) * 100 if date_str.match(YY_YY_CENTURY_REGEX)
       return (Regexp.last_match(1).to_i - 1) * 100 if date_str.match(CENTURY_WORD_REGEX)
     end
+    # rubocop:enable Metrics/AbcSize
 
     # last year of century if we have:  yyuu, yy--, yy--? or xxth century pattern
     # @return [Integer, nil] yy99 if date_str matches pattern, nil otherwise; also nil if B.C. in pattern
@@ -373,7 +377,7 @@ class ParseDate
     end
 
     FIRST_LAST_EARLY_NUMERIC_REGEX =
-      Regexp.new(/^(?<first>\-?\d{1,3})\??\s*(-|–|–|or|to)\s*(?<last>\-?\d{1,4})\??([^\du\-\[]|$)/im)
+      Regexp.new(/^(?<first>-?\d{1,3})\??\s*(-|–|–|or|to)\s*(?<last>-?\d{1,4})\??([^\du\-\[]|$)/im)
 
     # Integer value for latest year if we have early numeric year range or single early numeric year
     # @return [Integer, nil] year if date_str matches pattern; nil otherwise
