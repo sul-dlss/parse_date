@@ -245,7 +245,7 @@ RSpec.describe ParseDate::IntFromString do
     'Sept.r 5th 1793' => '1793'
   }
   specific_day_ruby_parse_fail = {
-    # note ruby Date.parse only handles american or euro date order, not both ??
+    # NOTE: ruby Date.parse only handles american or euro date order, not both ??
     '1/30/1979' => '1979',
     '10/20/1976' => '1976',
     '5-18-2014' => '2014',
@@ -698,7 +698,7 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
     it 'true for 0000' do
-      expect(ParseDate.year_int_valid?(0000)).to eq true
+      expect(ParseDate.year_int_valid?(0o000)).to eq true
     end
   end
 

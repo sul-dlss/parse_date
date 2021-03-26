@@ -65,6 +65,8 @@ class ParseDate
   # @param [Integer, String] first_year, expecting integer or parseable string for .to_i
   # @param [Integer, String] last_year, expecting integer or parseable string for .to_i
   # @return [Array] array of Integer year values from first to last, inclusive
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/PerceivedComplexity
   def self.range_array(first_year, last_year)
     first_year = first_year.to_i if first_year.is_a?(String) && first_year.match?(/^-?\d+$/)
     last_year = last_year.to_i if last_year.is_a?(String) && last_year.match?(/^-?\d+$/)
@@ -77,4 +79,6 @@ class ParseDate
 
     Range.new(first_year, last_year).to_a
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/PerceivedComplexity
 end
