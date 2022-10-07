@@ -501,6 +501,7 @@ RSpec.describe ParseDate::IntFromString do
     it '-1666 for -1666' do
       expect(ParseDate.earliest_year('-1666')).to eq(-1666)
     end
+
     it '-1666 for 1666 B.C.' do
       expect(ParseDate.earliest_year('1666 B.C.')).to eq(-1666)
     end
@@ -513,7 +514,7 @@ RSpec.describe ParseDate::IntFromString do
       '1uuu'
     ].each do |example|
       it "nil for #{example}" do
-        expect(ParseDate.earliest_year(example)).to eq nil
+        expect(ParseDate.earliest_year(example)).to be_nil
       end
     end
   end
@@ -655,9 +656,11 @@ RSpec.describe ParseDate::IntFromString do
     it '-1666 for -1666' do
       expect(ParseDate.latest_year('-1666')).to eq(-1666)
     end
+
     it '-1666 for 1666 B.C.' do
       expect(ParseDate.latest_year('1666 B.C.')).to eq(-1666)
     end
+
     it '-100 for -0100' do
       expect(ParseDate.latest_year('-0100')).to eq(-100)
     end
@@ -670,7 +673,7 @@ RSpec.describe ParseDate::IntFromString do
       '1uuu'
     ].each do |example|
       it "nil for #{example}" do
-        expect(ParseDate.latest_year(example)).to eq nil
+        expect(ParseDate.latest_year(example)).to be_nil
       end
     end
   end
@@ -698,11 +701,11 @@ RSpec.describe ParseDate::IntFromString do
       end
     end
     it 'true for 0000' do
-      expect(ParseDate.year_int_valid?(0o000)).to eq true
+      expect(ParseDate.year_int_valid?(0o000)).to be true
     end
   end
 
-  context 'private instance methods - tests illustrate some nuances/make development easier' do
+  describe 'private instance methods - tests illustrate some nuances/make development easier' do
     describe '#hyphen_4digit_latest_year' do
       { # example string as key, expected result as value
         '1496-1499' => 1499,
@@ -811,7 +814,7 @@ RSpec.describe ParseDate::IntFromString do
         .push(*decade_only.keys)
         .push(*century_only).each do |example|
         it "nil for #{example}" do
-          expect(ParseDate.send(:first_four_digits, example)).to eq nil if example
+          expect(ParseDate.send(:first_four_digits, example)).to be_nil if example
         end
       end
     end
@@ -832,7 +835,7 @@ RSpec.describe ParseDate::IntFromString do
         '92-31-1',  # yy-dd-mm:  doesn't work.  :-(
       ].push(*decade_only.keys).each do |example|
         it "nil for #{example}" do
-          expect(ParseDate.send(:year_from_mm_dd_yy, example)).to eq nil
+          expect(ParseDate.send(:year_from_mm_dd_yy, example)).to be_nil
         end
       end
     end
@@ -857,7 +860,7 @@ RSpec.describe ParseDate::IntFromString do
       # some of the strings this method cannot handle (so must be parsed with other instance methods)
       decade_only_4_digits.keys.push(*specific_day_2_digit_year.keys).each do |example|
         it "nil for #{example}" do
-          expect(ParseDate.send(:first_year_for_decade, example)).to eq nil
+          expect(ParseDate.send(:first_year_for_decade, example)).to be_nil
         end
       end
     end
@@ -871,6 +874,7 @@ RSpec.describe ParseDate::IntFromString do
       it '700 for 7--' do
         expect(ParseDate.send(:first_year_for_century, '7--')).to eq 700
       end
+
       it '7th century B.C.' do
         expect(ParseDate.send(:first_year_for_century, '7th century B.C.')).to eq(-799)
       end

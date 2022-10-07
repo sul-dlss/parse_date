@@ -2,7 +2,7 @@
 
 RSpec.describe ParseDate do
   it 'has a version number' do
-    expect(ParseDate::VERSION).not_to be nil
+    expect(ParseDate::VERSION).not_to be_nil
   end
 
   describe '.parse_range' do
@@ -17,7 +17,7 @@ RSpec.describe ParseDate do
         'ca. 1558' => [1558],
       }.each do |example, expected|
         it "array of single value #{expected} for '#{example}'" do
-          expect(ParseDate.parse_range(example)).to eq expected
+          expect(described_class.parse_range(example)).to eq expected
         end
       end
 
@@ -60,7 +60,7 @@ RSpec.describe ParseDate do
         '-2100 - -2000' => (-2100..-2000).to_a,
       }.each do |example, expected|
         it "#{example} returns array from earliest (#{expected.first}) to latest (#{expected.last})" do
-          expect(ParseDate.parse_range(example)).to eq expected
+          expect(described_class.parse_range(example)).to eq expected
         end
       end
 
@@ -70,7 +70,7 @@ RSpec.describe ParseDate do
           '2045 - 2050', # all endpoints later than current year + 1
         ].each do |example|
           it "'#{example}' returns nil" do
-            expect(ParseDate.parse_range(example)).to be nil
+            expect(described_class.parse_range(example)).to be_nil
           end
         end
       end
@@ -84,7 +84,7 @@ RSpec.describe ParseDate do
         ].each do |example|
           it "raises error: '#{example}'" do
             exp_msg_regex = /Unable to parse range from '#{example}'/
-            expect { ParseDate.parse_range(example) }.to raise_error(ParseDate::Error, exp_msg_regex)
+            expect { described_class.parse_range(example) }.to raise_error(ParseDate::Error, exp_msg_regex)
           end
         end
       end
@@ -98,7 +98,7 @@ RSpec.describe ParseDate do
         '2045 - 2050', # only invalid year endpoints
       ].each do |example|
         it "'#{example}' returns nil" do
-          expect(ParseDate.parse_range(example)).to be nil
+          expect(described_class.parse_range(example)).to be_nil
         end
       end
     end
@@ -120,13 +120,13 @@ RSpec.describe ParseDate do
       [-15000, -14999] => true,
     }.each do |key, expected|
       it "#{expected} for #{key}" do
-        expect(ParseDate.year_range_valid?(key.first, key.last)).to eq expected
+        expect(described_class.year_range_valid?(key.first, key.last)).to eq expected
       end
     end
   end
 
   describe '.range_array' do
-    context 'when input is valid: ' do
+    context 'when input is valid:' do
       [
         ['1993', '1995', [1993, 1994, 1995]],
         [1993, 1995, [1993, 1994, 1995]],
@@ -141,11 +141,12 @@ RSpec.describe ParseDate do
         last_year = example[1]
         expected = example[2]
         it "(#{first_year} to #{last_year})" do
-          expect(ParseDate.range_array(first_year, last_year)).to eq expected
+          expect(described_class.range_array(first_year, last_year)).to eq expected
         end
       end
     end
-    context 'when input is invalid: ' do
+
+    context 'when input is invalid:' do
       [
         ['1993', '1992'],
         [1993, 1992],
@@ -155,7 +156,7 @@ RSpec.describe ParseDate do
         last_year = example[1]
         it "(#{first_year} to #{last_year})" do
           exp_msg_regex = /unable to create year range array from #{first_year}, #{last_year}/
-          expect { ParseDate.range_array(first_year, last_year) }.to raise_error(StandardError, exp_msg_regex)
+          expect { described_class.range_array(first_year, last_year) }.to raise_error(StandardError, exp_msg_regex)
         end
       end
 
@@ -166,7 +167,7 @@ RSpec.describe ParseDate do
         last_year = example[1]
         it "(#{first_year} to #{last_year})" do
           exp_msg_regex = /comparison of String with/
-          expect { ParseDate.range_array(first_year, last_year) }.to raise_error(ArgumentError, exp_msg_regex)
+          expect { described_class.range_array(first_year, last_year) }.to raise_error(ArgumentError, exp_msg_regex)
         end
       end
     end
