@@ -66,7 +66,8 @@ class ParseDate
     def earliest_year_bc_parsing(date_str)
       return ParseDate.send(:earliest_century_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
       return ParseDate.send(:between_bc_earliest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
-      return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
+
+      ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
     end
 
     def earliest_year_parsing(date_str)
@@ -91,7 +92,8 @@ class ParseDate
       return ParseDate.send(:last_year_mult_centuries_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
       return ParseDate.send(:between_bc_latest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
       return ParseDate.send(:last_year_for_bc_century, date_str) if date_str.match(BC_CENTURY_REGEX)
-      return ParseDate.send(:year_int_for_bc, date_str) if date_str.match(BC_REGEX)
+
+      ParseDate.send(:year_int_for_bc, date_str) if date_str.match(BC_REGEX)
     end
 
     # rubocop:disable Metrics/MethodLength
@@ -313,7 +315,8 @@ class ParseDate
       return Regexp.last_match(1).to_i * -100 - 99 if date_str.match(BC_CENTURY_REGEX)
       return Regexp.last_match(1).to_i * 100 if date_str.match(CENTURY_4CHAR_REGEX)
       return (Regexp.last_match(:first).to_i - 1) * 100 if date_str.match(YY_YY_CENTURY_REGEX)
-      return (Regexp.last_match(1).to_i - 1) * 100 if date_str.match(CENTURY_WORD_REGEX)
+
+      (Regexp.last_match(1).to_i - 1) * 100 if date_str.match(CENTURY_WORD_REGEX)
     end
     # rubocop:enable Metrics/AbcSize
 
@@ -321,7 +324,8 @@ class ParseDate
     # @return [Integer, nil] yy99 if date_str matches pattern, nil otherwise; also nil if B.C. in pattern
     def last_year_for_century(date_str)
       return Regexp.last_match(1).to_i * 100 + 99 if date_str.match(CENTURY_4CHAR_REGEX)
-      return (Regexp.last_match(1).to_i - 1) * 100 + 99 if date_str.match(CENTURY_WORD_REGEX)
+
+      (Regexp.last_match(1).to_i - 1) * 100 + 99 if date_str.match(CENTURY_WORD_REGEX)
     end
 
     # last year of century (as String) if we have:  nth century BC
