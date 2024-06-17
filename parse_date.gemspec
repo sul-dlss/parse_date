@@ -35,7 +35,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 13.0.3'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 1.12'
+  spec.add_development_dependency 'rubocop-capybara'
+  spec.add_development_dependency 'rubocop-factory_bot'
   spec.add_development_dependency 'rubocop-rake'
   spec.add_development_dependency 'rubocop-rspec'
+  spec.add_development_dependency 'rubocop-rspec_rails'
   spec.add_development_dependency 'simplecov'
 end

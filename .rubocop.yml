@@ -1,5 +1,9 @@
 require:
+  - rubocop-capybara
+  - rubocop-factory_bot
+  - rubocop-rake
   - rubocop-rspec
+  - rubocop-rspec_rails
 
 inherit_from: .rubocop_todo.yml
 
