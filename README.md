@@ -1,7 +1,6 @@
 [![Gem Version](https://badge.fury.io/rb/parse_date.svg)](https://badge.fury.io/rb/parse_date)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/sul-dlss/parse_date/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/sul-dlss/parse_date/tree/main)
-[![Maintainability](https://api.codeclimate.com/v1/badges/2d006b4ccb3100434f4a/maintainability)](https://codeclimate.com/github/sul-dlss/parse_date/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/2d006b4ccb3100434f4a/test_coverage)](https://codeclimate.com/github/sul-dlss/parse_date/test_coverage)
+[![codecov](https://codecov.io/github/sul-dlss/parse_date/graph/badge.svg?token=SLX8J6L6ZV)](https://codecov.io/github/sul-dlss/parse_date)
 
 # ParseDate
 
