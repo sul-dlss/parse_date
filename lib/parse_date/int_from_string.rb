@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 class ParseDate
-
   # Parse (Year) Integers from Date Strings
   module IntFromString
-
     # earliest year as Integer if we can parse one from date_str
     #  e.g. if 17uu, result is 1700
     # NOTE:  if we have a x/x/yy or x-x-yy pattern (the only 2 digit year patterns
@@ -13,19 +11,19 @@ class ParseDate
     #   1/1/17  ->  2017
     #   1/1/27  ->  1927
     # @return [Integer, nil] Integer year if we could parse one, nil otherwise
-    def self.earliest_year(date_str)
+    def earliest_year(date_str)
       return unless date_str && !date_str.empty?
       return if date_str == '0000-00-00' # shpc collection has these useless dates
 
       # B.C. first (match longest string first)
-      bc_result = ParseDate.send(:earliest_year_bc_parsing, date_str)
+      bc_result = earliest_year_bc_parsing(date_str)
       return bc_result if bc_result
 
-      result = ParseDate.send(:earliest_year_parsing, date_str)
+      result = earliest_year_parsing(date_str)
       return result if result
 
       # try removing brackets between digits in case we have 169[5] or [18]91
-      no_brackets = ParseDate.send(:remove_brackets, date_str)
+      no_brackets = remove_brackets(date_str)
       earliest_year(no_brackets) if no_brackets
     end
 
@@ -37,37 +35,37 @@ class ParseDate
     #   1/1/17  ->  2017
     #   1/1/27  ->  1927
     # @return [Integer, nil] Integer year if we could parse one, nil otherwise
-    def self.latest_year(date_str)
+    def latest_year(date_str)
       return unless date_str && !date_str.empty?
       return if date_str == '0000-00-00' # shpc collection has these useless dates
 
       # B.C. first (match longest string first)
-      bc_result = ParseDate.send(:latest_year_bc_parsing, date_str)
+      bc_result = latest_year_bc_parsing(date_str)
       return bc_result if bc_result
 
-      result = ParseDate.send(:latest_year_parsing, date_str)
+      result = latest_year_parsing(date_str)
       return result if result
 
       # try removing brackets between digits in case we have 169[5] or [18]91
-      no_brackets = ParseDate.send(:remove_brackets, date_str)
+      no_brackets = remove_brackets(date_str)
       latest_year(no_brackets) if no_brackets
     end
 
     # true if the year is between -9999 and (current year + 1), inclusive
     # @return [Boolean] true if the year is between -999 and (current year + 1); false otherwise
-    def self.year_int_valid?(year)
+    def year_int_valid?(year)
       return false unless year.is_a? Integer
 
       (-10000 < year.to_i) && (year < Date.today.year + 2)
     end
 
-    protected
+    private
 
     def earliest_year_bc_parsing(date_str)
-      return ParseDate.send(:earliest_century_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
-      return ParseDate.send(:between_bc_earliest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
+      return earliest_century_bc(date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
+      return between_bc_earliest_year(date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
 
-      ParseDate.send(:year_int_for_bc, date_str) if date_str.match(YEAR_BC_REGEX)
+      year_int_for_bc(date_str) if date_str.match(YEAR_BC_REGEX)
     end
 
     def earliest_year_parsing(date_str)
@@ -82,18 +80,18 @@ class ParseDate
         :first_year_for_century, # includes some BC
         :year_for_early_numeric
       ].each do |method_name|
-        result = ParseDate.send(method_name, date_str)
+        result = send(method_name, date_str)
         return result.to_i if result && year_int_valid?(result.to_i)
       end
       nil
     end
 
     def latest_year_bc_parsing(date_str)
-      return ParseDate.send(:last_year_mult_centuries_bc, date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
-      return ParseDate.send(:between_bc_latest_year, date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
-      return ParseDate.send(:last_year_for_bc_century, date_str) if date_str.match(BC_CENTURY_REGEX)
+      return last_year_mult_centuries_bc(date_str) if date_str.match(YY_YY_CENTURY_BC_REGEX)
+      return between_bc_latest_year(date_str) if date_str.match(BETWEEN_Yn_AND_Yn_BC_REGEX)
+      return last_year_for_bc_century(date_str) if date_str.match(BC_CENTURY_REGEX)
 
-      ParseDate.send(:year_int_for_bc, date_str) if date_str.match(BC_REGEX)
+      year_int_for_bc(date_str) if date_str.match(BC_REGEX)
     end
 
     # rubocop:disable Metrics/MethodLength
@@ -117,7 +115,7 @@ class ParseDate
         :last_year_for_century,
         :last_year_for_early_numeric
       ].each do |method|
-        result ||= ParseDate.send(method, date_str)
+        result ||= send(method, date_str)
         return result.to_i if result && year_int_valid?(result.to_i)
       end
       nil
@@ -145,8 +143,8 @@ class ParseDate
     # @return [Integer, nil] yyyy if date_str matches pattern; nil otherwise
     def hyphen_4digit_latest_year(date_str)
       latest = Regexp.last_match(:last) if date_str.match(YYYY_HYPHEN_YYYY_REGEX)
-      if ParseDate.year_int_valid?(latest.to_i)
-        ParseDate.latest_year(latest) # accommodates '1980s - 1990s'
+      if year_int_valid?(latest.to_i)
+        latest_year(latest) # accommodates '1980s - 1990s'
       else
         # return the bad value;  parse_range might need to complain about it
         latest
@@ -164,7 +162,7 @@ class ParseDate
       first = Regexp.last_match(:first)
       century = first[0..-3] # whatever is before the last 2 digits
       last = "#{century}#{Regexp.last_match(:last)}"
-      last.to_i if ParseDate.year_range_valid?(first.to_i, last.to_i)
+      last.to_i if year_range_valid?(first.to_i, last.to_i)
     end
 
     YYYY_HYPHEN_Y_REGEX = Regexp.new(/(?<first>\d{3,4})\??\s*(-|—|–|to)\s*(?<last>\d{1})\??([^-0-9].*)?$/)
@@ -178,7 +176,7 @@ class ParseDate
       first = Regexp.last_match(:first)
       decade = first[0..-2] # whatever is before the last digit
       last = "#{decade}#{Regexp.last_match(:last)}"
-      last.to_i if ParseDate.year_range_valid?(first.to_i, last.to_i)
+      last.to_i if year_range_valid?(first.to_i, last.to_i)
     end
 
     YYUU = '\\d{1,2}[u\\-]{2}'
@@ -281,7 +279,7 @@ class ParseDate
     def last_year_for_0s_decade(date_str)
       decade_matches = date_str.match(DECADE_0S_REGEX)
       changed_to_nine = decade_matches.to_s.sub(/0'?s/, '9') if decade_matches
-      ParseDate.first_four_digits(changed_to_nine) if changed_to_nine
+      first_four_digits(changed_to_nine) if changed_to_nine
     end
 
     DECADE_4CHAR_REGEX = Regexp.new('(^|\D)\d{3}[u\-?x]($|\D)', REGEX_OPTS)
@@ -292,7 +290,7 @@ class ParseDate
     def first_year_for_decade(date_str)
       decade_matches = date_str.match(DECADE_4CHAR_REGEX)
       changed_to_zero = decade_matches.to_s.tr('u\-?x', '0') if decade_matches
-      ParseDate.first_four_digits(changed_to_zero) if changed_to_zero
+      first_four_digits(changed_to_zero) if changed_to_zero
     end
 
     # last year of decade (as String) if we have:  yyyu, yyy-, yyy? or yyyx pattern
@@ -301,7 +299,7 @@ class ParseDate
     def last_year_for_decade(date_str)
       decade_matches = date_str.match(DECADE_4CHAR_REGEX)
       changed_to_nine = decade_matches.to_s.tr('u\-?x', '9') if decade_matches
-      ParseDate.first_four_digits(changed_to_nine) if changed_to_nine
+      first_four_digits(changed_to_nine) if changed_to_nine
     end
 
     CENTURY_WORD_REGEX = Regexp.new('(\d{1,2})[a-z]{2}?\s*century', REGEX_OPTS)
