@@ -70,6 +70,8 @@ class ParseDate
 
     def earliest_year_parsing(date_str)
       [
+        # DataWorks date ranges include slashes and hyphens that match date_str/date_str
+        :slash_earliest_year,
         # longest string first, more or less
         :between_earliest_year,
         :hyphen_4digit_earliest_year,
@@ -98,6 +100,8 @@ class ParseDate
     def latest_year_parsing(date_str)
       result = nil
       [
+        # DataWorks date ranges include slashes and hyphens that match date_str/date_str
+        :slash_latest_year,
         # longest string first, more or less
         :between_latest_year,
         :hyphen_4digit_latest_year,
@@ -330,6 +334,21 @@ class ParseDate
     # @return [Integer, nil] -yy00 if date_str matches pattern, nil otherwise; also nil if B.C. in pattern
     def last_year_for_bc_century(date_str)
       Regexp.last_match(1).to_i * -100 if date_str.match(BC_CENTURY_REGEX)
+    end
+
+    # Regex for a date range pattern with a slash: 2023-01-02T19:20:30+01:00/2025-01-01
+    DATESTR_REGEX = Regexp.new(/\b(\d{4})\b.*?\/.*?\b(\d{4})\b/im) # rubocop:disable Style/RegexpLiteral
+
+    # Integer value for earliest if we have "date_str/date_str" pattern
+    # @return [Integer, nil] year if date_str matches pattern; nil otherwise
+    def slash_earliest_year(date_str)
+      Regexp.last_match(1).to_i if date_str.match(DATESTR_REGEX)
+    end
+
+    # Integer value for latest if we have "date_str/date_str" pattern
+    # @return [Integer, nil] year if date_str matches pattern; nil otherwise
+    def slash_latest_year(date_str)
+      Regexp.last_match(2).to_i if date_str.match(DATESTR_REGEX)
     end
 
     BETWEEN_Yn_AND_Yn_REGEX = Regexp.new(/between\s+(?<first>\d{1,4})\??\s+and\s+(?<last>\d{1,4})\??/im)

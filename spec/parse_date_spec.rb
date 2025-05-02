@@ -15,6 +15,7 @@ RSpec.describe ParseDate do
         '-914' => [-914],
         '[c1926]' => [1926],
         'ca. 1558' => [1558],
+        '2023-01-02T19:20:30+01:00/2025-01-01' => [2023, 2024, 2025],
       }.each do |example, expected|
         it "array of single value #{expected} for '#{example}'" do
           expect(described_class.parse_range(example)).to eq expected
