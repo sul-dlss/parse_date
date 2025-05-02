@@ -10,7 +10,7 @@ RSpec.describe ParseDate do
       # single value
       { # string to parse as key, expected result as value
         '12/25/00' => [2000],
-        '5-1-25' => [1925],
+        '5-1-25' => [2025],
         '1666 B.C.' => [-1666],
         '-914' => [-914],
         '[c1926]' => [1926],

@@ -13,7 +13,7 @@ end
 
 require 'bundler/setup'
 require 'parse_date'
-require 'pry'
+require 'debug'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
